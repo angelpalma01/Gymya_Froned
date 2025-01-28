@@ -20,25 +20,22 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.GymYaTeam.gymya_users"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        applicationId = "com.GymYaTeam.gymya_users"  // ID único para tu aplicación
+        minSdkVersion 21  // Establece la versión mínima de SDK (ajústalo a tu preferencia)
+        targetSdkVersion flutter.targetSdkVersion  // Usa la versión de SDK objetivo definida por Flutter
+        versionCode flutter.versionCode  // Código de la versión de Flutter
+        versionName flutter.versionName  // Nombre de la versión de Flutter
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Aquí debes agregar tu configuración de firma para la versión de release si ya tienes una.
+            // Firma de depuración por ahora.
             signingConfig = signingConfigs.debug
         }
     }
 }
 
 flutter {
-    source = "../.."
+    source = "../.."  // Ruta de tu código fuente Flutter
 }

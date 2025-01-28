@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
-import 'dashboard_screen.dart';
+import 'app/Bienvenida/bienvenido.dart';
+import './app/Inicio_sesion/login_screen.dart';
+import 'app/Home/home.dart' as ds_screen;
+import './dashboard_diseño.dart' as ds_diseno;
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,26 +18,33 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/login',
+      debugShowCheckedModeBanner: false, // Oculta el banner "DEBUG"
+      initialRoute: '/bienvenida', // Pantalla inicial
       routes: {
+        '/bienvenida': (context) => WelcomeScreen(),
         '/login': (context) => LoginScreen(),
-        // No puedes usar rutas nombradas para pasar argumentos directamente
-        // '/dashboard': (context) => DashboardScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/dashboard') {
           final args = settings.arguments as Map<String, dynamic>;
           return MaterialPageRoute(
             builder: (context) {
-              return DashboardScreen(
+              return ds_screen.DashboardScreen(
                 token: args['token'],
                 user: args['user'],
               );
             },
           );
         }
+        if (settings.name == '/dashboard_diseno') {
+          return MaterialPageRoute(
+            builder: (context) {
+              return ds_diseno.DashboardScreen();
+            },
+          );
+        }
         return null;
-      },
+      }
     );
   }
 }
