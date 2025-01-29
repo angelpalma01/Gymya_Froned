@@ -12,6 +12,14 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
+  int _selectedIndex = 0;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -22,7 +30,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             children: [
               _buildHeader(),
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -44,16 +52,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       lastVisitDate: '23 noviembre 2024',
                       onEnterPressed: () {},
                       onHistoryPressed: () {
-                      Navigator.push(
-                       context,
-                       MaterialPageRoute(
-                       builder: (context) => HistorialEntradasScreen(
-                       token: widget.token,
-                        user: widget.user, // Asegúrate de pasar el usuario también
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => HistorialEntradasScreen(
+                              token: widget.token,
+                              user: widget.user,
+                            ),
                           ),
-                        ),
-                      );
-                    },
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -69,19 +77,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildHeader() {
     return Container(
       color: Colors.black,
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Hola, ${widget.user['nombre_completo']}',
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          ShaderMask(
+            shaderCallback: (Rect bounds) {
+              return LinearGradient(
+                colors: [Colors.purple, Colors.red],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ).createShader(bounds);
+            },
+            child: Text(
+              'Hola, ${widget.user['nombre_completo']}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 28, // Agrandado el tamaño del texto
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          const SizedBox(height: 8),
           const CircleAvatar(
             radius: 24,
             backgroundImage: AssetImage('assets/profile_picture.png'),
@@ -97,10 +113,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       backgroundColor: Colors.black,
       selectedItemColor: Colors.purple,
       unselectedItemColor: Colors.grey,
-      showUnselectedLabels: false,
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      showUnselectedLabels: true,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Entrenadores'),
+        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'), // Cambiado a "Couch"
         BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
         BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
       ],
@@ -117,7 +135,7 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(color: Colors.black, fontSize: 18),
+      style: const TextStyle(color: Colors.white, fontSize: 18),
     );
   }
 }
@@ -132,7 +150,7 @@ class MembershipCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[900], // Oscurecido el color del cuadro
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
@@ -143,12 +161,12 @@ class MembershipCard extends StatelessWidget {
         children: [
           const Text(
             'Fecha de vencimiento:',
-            style: TextStyle(color: Colors.black, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           Text(
             expiryDate,
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -187,7 +205,7 @@ class VisitCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[900], // Oscurecido el color del cuadro
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
@@ -198,12 +216,12 @@ class VisitCard extends StatelessWidget {
         children: [
           const Text(
             'Última visita:',
-            style: TextStyle(color: Colors.black, fontSize: 16),
+            style: TextStyle(color: Colors.white, fontSize: 16),
           ),
           Text(
             lastVisitDate,
             style: const TextStyle(
-              color: Colors.black,
+              color: Colors.white,
               fontSize: 14,
               fontWeight: FontWeight.bold,
             ),
@@ -214,17 +232,22 @@ class VisitCard extends StatelessWidget {
             children: [
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: const Color.fromARGB(255, 101, 9, 2),
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Colors.red),
                   ),
                 ),
                 onPressed: onEnterPressed,
-                child: const Text('Entrada al gym', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  'Entrada al gym',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.purple,
+                  backgroundColor: const Color.fromARGB(255, 101, 9, 2),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
