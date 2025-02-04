@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:table_calendar/table_calendar.dart';
 import 'package:gymya_users/app/historial/historial_entradas.dart';
+import 'package:intl/intl.dart';
+
 
 class DashboardScreen extends StatefulWidget {
   final String token;
@@ -13,6 +16,9 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
+  CalendarFormat _calendarFormat = CalendarFormat.week;
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -63,6 +69,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         );
                       },
                     ),
+                    const SizedBox(height: 16),
+                    const SectionTitle(title: 'Calendario:'),
+                    _buildCalendar(),
                   ],
                 ),
               ),
@@ -93,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               'Hola, ${widget.user['nombre_completo']}',
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 28, // Agrandado el tamaño del texto
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -118,10 +127,69 @@ class _DashboardScreenState extends State<DashboardScreen> {
       showUnselectedLabels: true,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'), // Cambiado a "Couch"
+        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
         BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
         BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
       ],
+    );
+  }
+
+  Widget _buildCalendar() {
+    return TableCalendar(
+      firstDay: DateTime.utc(2020, 1, 1),
+      lastDay: DateTime.utc(2030, 12, 31),
+      focusedDay: _focusedDay,
+      calendarFormat: _calendarFormat,
+      selectedDayPredicate: (day) {
+        return isSameDay(_selectedDay, day);
+      },
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      onFormatChanged: (format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      },
+      onPageChanged: (focusedDay) {
+        _focusedDay = focusedDay;
+      },
+      calendarStyle: CalendarStyle(
+        selectedDecoration: BoxDecoration(
+          color: Colors.purple,
+          shape: BoxShape.circle,
+        ),
+        todayDecoration: BoxDecoration(
+          color: Colors.purple.withOpacity(0.5),
+          shape: BoxShape.circle,
+        ),
+        selectedTextStyle: TextStyle(color: Colors.white),
+        todayTextStyle: TextStyle(color: Colors.white),
+      ),
+      headerStyle: HeaderStyle(
+        formatButtonVisible: false,
+        titleTextStyle: TextStyle(color: Colors.white),
+        leftChevronIcon: Icon(Icons.chevron_left, color: Colors.white),
+        rightChevronIcon: Icon(Icons.chevron_right, color: Colors.white),
+      ),
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekdayStyle: TextStyle(color: Colors.white),
+        weekendStyle: TextStyle(color: Colors.white),
+      ),
+      calendarBuilders: CalendarBuilders(
+        dowBuilder: (context, day) {
+          final text = DateFormat.E().format(day);
+          return Center(
+            child: Text(
+              text,
+              style: TextStyle(color: Colors.white),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -150,7 +218,7 @@ class MembershipCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[900], // Oscurecido el color del cuadro
+        color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
@@ -205,7 +273,7 @@ class VisitCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey[900], // Oscurecido el color del cuadro
+        color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
         boxShadow: const [
           BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
@@ -236,7 +304,6 @@ class VisitCard extends StatelessWidget {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: Colors.red),
                   ),
                 ),
                 onPressed: onEnterPressed,

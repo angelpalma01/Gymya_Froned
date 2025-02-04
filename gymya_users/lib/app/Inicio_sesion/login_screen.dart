@@ -2,7 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import '../Home/home.dart';
+import 'dart:ui' as ui; // Importar 'dart:ui' con el alias 'ui'
+import '../Home/home.dart'; // Importa el archivo del dashboard
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -131,130 +132,154 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 120,
-              width: 120,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage('lib/Recursos/Img/Logo.jpg'),
-                  fit: BoxFit.cover,
+      body: Stack(
+        children: [
+          // Fondo con blur solo ocupando la mitad de la pantalla
+          Positioned.fill(
+            child: FractionallySizedBox(
+              alignment: Alignment.topCenter,
+              heightFactor: 0.5, // Solo ocupa la mitad de la pantalla
+              child: ImageFiltered(
+                imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                child: Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage('lib/Recursos/Img/Bienvenida.jpg'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
-            Container(
-              width: screenWidth * 0.85,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10,
-                    offset: Offset(0, 5),
+          ),
+          Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Logo de la aplicación con formato circular
+                SizedBox(height: screenHeight * 0.090),
+                Container(
+                  height: screenHeight * 0.15,
+                  width: screenHeight * 0.15,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    image: DecorationImage(
+                      image: AssetImage('lib/Recursos/Img/Logo.jpg'),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text.rich(
-                    TextSpan(
-                      text: 'Bienvenido a ',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.purple.shade300,
+                ),
+                SizedBox(height: 20),
+                Container(
+                  width: screenWidth * 0.85,
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
                       ),
-                      children: [
+                    ],
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text.rich(
                         TextSpan(
-                          text: 'GymYa',
+                          text: 'Bienvenido a ',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: Colors.purple.shade700,
+                            color: Colors.purple.shade300,
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'GymYa',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.purple.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      TextField(
+                        controller: _usernameController,
+                        decoration: InputDecoration(
+                          labelText: 'Username',
+                          border: UnderlineInputBorder(),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      TextField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: 'Contraseña',
+                          border: UnderlineInputBorder(),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.purple.shade700,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: _usernameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                      border: UnderlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: InputDecoration(
-                      labelText: 'Contraseña',
-                      border: const UnderlineInputBorder(),
-                      // Agregar botón para mostrar/ocultar contraseña
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _showPassword ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.purple.shade700,
+                        obscureText: !_showPassword, // Invertir la visibilidad
+                      ),
+                      SizedBox(height: 10),
+                      CheckboxListTile(
+                        title: Text(
+                          'Recordar mis datos',
+                          style: TextStyle(fontSize: 14),
                         ),
-                        onPressed: () {
+                        value: _rememberMe,
+                        onChanged: (value) {
                           setState(() {
-                            _showPassword = !_showPassword;
+                            _rememberMe = value ?? false;
                           });
                         },
+                        controlAffinity: ListTileControlAffinity.leading,
+                        contentPadding: EdgeInsets.zero,
+                        dense: true,
                       ),
-                    ),
-                    obscureText: !_showPassword, // Invertir la visibilidad
-                  ),
-                  const SizedBox(height: 10),
-                  CheckboxListTile(
-                    title: const Text(
-                      'Recordar mis datos',
-                      style: TextStyle(fontSize: 14),
-                    ),
-                    value: _rememberMe,
-                    onChanged: (value) {
-                      setState(() {
-                        _rememberMe = value ?? false;
-                      });
-                    },
-                    controlAffinity: ListTileControlAffinity.leading,
-                    contentPadding: EdgeInsets.zero,
-                    dense: true,
-                  ),
-                  const SizedBox(height: 20),
-                  _isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: _login,
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 30, vertical: 12),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
+                      SizedBox(height: 20),
+                      _isLoading
+                          ? CircularProgressIndicator()
+                          : ElevatedButton(
+                              onPressed: _login,
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 30, vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
+                                backgroundColor: Colors.purple.shade700,
+                              ),
+                              child: Text(
+                                'Iniciar sesión',
+                                style: TextStyle(color: Colors.white),
+                              ),
                             ),
-                            backgroundColor: Colors.purple.shade700,
-                          ),
-                          child: const Text(
-                            'Iniciar sesión',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                ],
-              ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

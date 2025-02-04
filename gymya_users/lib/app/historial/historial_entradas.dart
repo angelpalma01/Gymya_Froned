@@ -18,6 +18,37 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
   final _storage = FlutterSecureStorage();
   List<dynamic> _asistencias = [];
   bool _isLoading = true;
+  int _selectedIndex = 0; // Índice para el BottomNavigationBar
+
+  // Función para manejar la selección del menú inferior
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+
+    // Navegar a otras pantallas según el índice seleccionado
+    switch (index) {
+      case 0:
+        Navigator.pushReplacementNamed(
+          context,
+          '/home',
+          arguments: {
+            'token': widget.token, // Pasa el token
+            'user': widget.user, // Pasa el usuario
+          },
+        );
+        break;
+      case 1:
+        // Navegar a la pantalla de "Couch"
+        break;
+      case 2:
+        // Navegar a la pantalla de "Horarios"
+        break;
+      case 3:
+        // Navegar a la pantalla de "Pagos"
+        break;
+    }
+  }
 
   @override
   void initState() {
@@ -57,14 +88,15 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Error'),
-        content: Text(message),
+        title: Text('Error', style: TextStyle(color: Colors.white)),
+        content: Text(message, style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.grey[900],
         actions: [
           TextButton(
             onPressed: () {
               Navigator.of(ctx).pop();
             },
-            child: Text('OK'),
+            child: Text('OK', style: TextStyle(color: Colors.purple)),
           ),
         ],
       ),
@@ -74,12 +106,17 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Historial de Asistencias'),
+        title: Text(
+          'Historial de Asistencias',
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ),
         backgroundColor: Colors.black,
+        iconTheme: IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
               await _storage.delete(key: 'token');
               Navigator.pushReplacementNamed(context, '/login');
@@ -88,7 +125,11 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
         ],
       ),
       body: _isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+              ),
+            )
           : _asistencias.isEmpty
               ? Center(
                   child: Text(
@@ -107,6 +148,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
                       elevation: 4,
+                      color: Colors.grey[900],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -122,7 +164,11 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                         ),
                         title: Text(
                           'Fecha y hora: $fechaHora',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
                         ),
                         subtitle: Text(
                           'Tipo de acceso: $tipoAcceso',
@@ -132,6 +178,22 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                     );
                   },
                 ),
+      // Agregar el BottomNavigationBar
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.purple,
+        unselectedItemColor: Colors.grey,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        showUnselectedLabels: true,
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
+          BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
+          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
+        ],
+      ),
     );
   }
 }
