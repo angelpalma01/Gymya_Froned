@@ -46,13 +46,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-  // Lista de páginas correspondientes a cada botón del BottomNavigationBar
-  static const List<Widget> _pages = [
-    CouchPage(),
-    HorariosPage(),
-    PagosPage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
