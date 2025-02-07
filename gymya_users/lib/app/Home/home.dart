@@ -3,6 +3,26 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:gymya_users/app/historial/historial_entradas.dart';
 import 'package:intl/intl.dart';
 
+class CouchPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Couch', style: TextStyle(fontSize: 24, color: Colors.white)));
+  }
+}
+
+class HorariosPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Horarios', style: TextStyle(fontSize: 24, color: Colors.white)));
+  }
+}
+
+class PagosPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Pagos', style: TextStyle(fontSize: 24, color: Colors.white)));
+  }
+}
 
 class DashboardScreen extends StatefulWidget {
   final String token;
@@ -25,6 +45,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _selectedIndex = index;
     });
   }
+
+  // Lista de páginas correspondientes a cada botón del BottomNavigationBar
+  static const List<Widget> _pages = [
+    CouchPage(),
+    HorariosPage(),
+    PagosPage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
