@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:ui' as ui;
-import '../Home/home.dart';
+import 'dart:ui' as ui; // Importar 'dart:ui' con el alias 'ui'
+import '../Home/home.dart'; // Importa el archivo del dashboard
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,7 +18,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _storage = FlutterSecureStorage();
   bool _isLoading = false;
   bool _rememberMe = false;
-  bool _showPassword = false;
+  bool _showPassword = false; // Nuevo estado para mostrar/ocultar contraseña
 
   final String apiUrl = 'https://api-gymya-api.onrender.com/api/user/login';
 
@@ -66,7 +66,9 @@ class _LoginScreenState extends State<LoginScreen> {
         content: Text(message),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
             child: const Text('OK'),
           ),
         ],
@@ -80,7 +82,9 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
       final response = await http.post(
@@ -95,27 +99,21 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (response.statusCode == 200) {
-        print('Respuesta del servidor: ${response.body}');
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        
-        if (data.containsKey('token') && data.containsKey('user')) {
-          final String token = data['token'];
-          final user = data['user'];
-          
-          await _storage.write(key: 'token', value: token);
-          await _saveCredentials();
+        final data = jsonDecode(response.body);
+        final String token = data['token'];
+        final user = data['user'];
 
-          if (!mounted) return;
+        await _storage.write(key: 'token', value: token);
+        await _saveCredentials();
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DashboardScreen(token: token, user: user),
-            ),
-          );
-        } else {
-          _showErrorDialog('Respuesta del servidor inválida');
-        }
+        if (!mounted) return;
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(token: token, user: user),
+          ),
+        );
       } else {
         _showErrorDialog('Credenciales inválidas');
       }
@@ -125,7 +123,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -138,10 +138,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
+          // Fondo con blur solo ocupando la mitad de la pantalla
           Positioned.fill(
             child: FractionallySizedBox(
               alignment: Alignment.topCenter,
-              heightFactor: 0.5,
+              heightFactor: 0.5, // Solo ocupa la mitad de la pantalla
               child: ImageFiltered(
                 imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                 child: Container(
@@ -159,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Logo de la aplicación con formato circular
                 SizedBox(height: screenHeight * 0.090),
                 Container(
                   height: screenHeight * 0.15,
@@ -229,11 +231,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.purple.shade700,
                             ),
                             onPressed: () {
-                              setState(() => _showPassword = !_showPassword);
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
                             },
                           ),
                         ),
-                        obscureText: !_showPassword,
+                        obscureText: !_showPassword, // Invertir la visibilidad
                       ),
                       SizedBox(height: 10),
                       CheckboxListTile(
@@ -243,7 +247,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         value: _rememberMe,
                         onChanged: (value) {
-                          setState(() => _rememberMe = value ?? false);
+                          setState(() {
+                            _rememberMe = value ?? false;
+                          });
                         },
                         controlAffinity: ListTileControlAffinity.leading,
                         contentPadding: EdgeInsets.zero,
@@ -256,9 +262,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _login,
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(
-                                  horizontal: 30,
-                                  vertical: 12,
-                                ),
+                                    horizontal: 30, vertical: 12),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(30),
                                 ),
