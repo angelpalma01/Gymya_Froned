@@ -2,27 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:gymya_users/app/historial/historial_entradas.dart';
 import 'package:intl/intl.dart';
-
-class CouchPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Couch', style: TextStyle(fontSize: 24, color: Colors.white)));
-  }
-}
-
-class HorariosPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Horarios', style: TextStyle(fontSize: 24, color: Colors.white)));
-  }
-}
-
-class PagosPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(child: Text('Pagos', style: TextStyle(fontSize: 24, color: Colors.white)));
-  }
-}
+import 'package:http/http.dart' as http;
+import 'dart:convert';  // Para decodificar JSON
 
 class DashboardScreen extends StatefulWidget {
   final String token;
@@ -39,10 +20,39 @@ class _DashboardScreenState extends State<DashboardScreen> {
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
+  Future<String>? _qrFuture; // Variable para manejar la llamada de la API que genera el QR
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  // Método para generar el QR mediante una petición HTTP
+  Future<String> generarQR() async {
+    try {
+      final response = await http.get(
+        Uri.parse('https://api-gymya-api.onrender.com/api/user/qr'), // Cambia la URL por la de tu API
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',  // Enviar el token en la cabecera
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final jsonResponse = jsonDecode(response.body);
+        return jsonResponse['qrCode'];  // Aquí se devuelve el valor en Base64 del QR
+      } else {
+        throw Exception('Error al generar el código QR');
+      }
+    } catch (error) {
+      throw Exception('Error al conectar con la API: $error');
+    }
+  }
+
+  // Método para iniciar la generación del QR
+  void _onEnterPressed() {
+    setState(() {
+      _qrFuture = generarQR();  // Asignar la llamada a la API cuando se presiona el botón
     });
   }
 
@@ -76,7 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     const SizedBox(height: 16),
                     VisitCard(
                       lastVisitDate: '23 noviembre 2024',
-                      onEnterPressed: () {},
+                      onEnterPressed: _onEnterPressed,
                       onHistoryPressed: () {
                         Navigator.push(
                           context,
