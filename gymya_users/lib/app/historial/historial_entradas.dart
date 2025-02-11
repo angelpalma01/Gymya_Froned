@@ -7,7 +7,7 @@ class HistorialEntradasScreen extends StatefulWidget {
   final String token;
   final Map<String, dynamic> user;
 
-  HistorialEntradasScreen({required this.token, required this.user});
+  const HistorialEntradasScreen({super.key, required this.token, required this.user});
 
   @override
   _HistorialEntradasScreenState createState() =>

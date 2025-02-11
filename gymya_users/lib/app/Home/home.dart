@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:gymya_users/app/historial/historial_entradas.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart'; // Para generar el código QR
@@ -122,6 +121,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
+
+  
 
   Widget _buildQRCode() {
     // Verifica si ya tenemos los datos de la membresía y genera el QR
