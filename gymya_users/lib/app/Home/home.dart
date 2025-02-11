@@ -1,9 +1,12 @@
+// este aparatdo es el home y dashboard_screen
+
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart'; // Para generar el código QR
 import 'dart:convert';
+import 'dart:ui'; // Importa ImageFilter para el efecto de blur
 
 class DashboardScreen extends StatefulWidget {
   final String token;
@@ -25,6 +28,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   String? _membresiaId;
   String? _planId;
   bool isLoading = true;
+  bool showQRCode = false; // Nuevo estado para controlar la visibilidad del QR
 
   // Endpoint de membresía
   final String membresiaUrl = 'https://api-gymya-api.onrender.com/api/membresia';
@@ -77,52 +81,83 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
-   @override
+  void _toggleQRCode() {
+    setState(() {
+      showQRCode = !showQRCode;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SafeArea(
-        child: isLoading
-            ? Center(child: CircularProgressIndicator()) // Muestra un cargador mientras se obtienen los datos
-            : SingleChildScrollView(
-                child: Column(
-                  children: [
-                    _buildHeader(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SectionTitle(title: 'Estado de membresía:'),
-                          const Text(
-                            'Mantén tu membresía activa para seguir disfrutando de los beneficios.',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildMembershipCard(), // Fecha fin de la membresía
-                          const SizedBox(height: 16),
-                          const SectionTitle(title: 'Entrada al gimnasio:'),
-                          const Text(
-                            'Escanea el código QR para acceder al gimnasio.',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                          const SizedBox(height: 16),
-                          _buildQRCode(), // Generar código QR
-                          const SizedBox(height: 16),
-                          const SectionTitle(title: 'Calendario:'),
-                          _buildCalendar(),
-                        ],
-                      ),
+      body: Stack(
+        children: [
+          // Contenido principal
+          SafeArea(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SectionTitle(title: 'Estado de membresía:'),
+                        const Text(
+                          'Mantén tu membresía activa para seguir disfrutando de los beneficios.',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildMembershipCard(), // Fecha fin de la membresía
+                        const SizedBox(height: 16),
+                        const SectionTitle(title: 'Entrada al gimnasio:'),
+                        const Text(
+                          'Escanea el código QR para acceder al gimnasio.',
+                          style: TextStyle(color: Colors.grey, fontSize: 14),
+                        ),
+                        const SizedBox(height: 16),
+                        VisitCard(
+                          lastVisitDate: 'Última visita: 12 de Octubre 2023',
+                          onEnterPressed: _toggleQRCode,
+                          onHistoryPressed: () {
+                            // Aquí puedes agregar la lógica para ver el historial
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        const SectionTitle(title: 'Calendario:'),
+                        _buildCalendar(),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Efecto de blur y código QR
+          if (showQRCode)
+            GestureDetector(
+              onTap: _toggleQRCode, // Cierra el código QR al tocar fuera de él
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5), // Efecto de desenfoque
+                child: Container(
+                  color: Colors.black.withOpacity(0.5), // Fondo semi-transparente
+                  child: Center(
+                    child: GestureDetector(
+                      onTap: () {}, // Evita que el toque en el QR lo cierre
+                      child: _buildQRCode(), // Código QR centrado
+                    ),
+                  ),
                 ),
               ),
+            ),
+        ],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
     );
   }
-
-  
 
   Widget _buildQRCode() {
     // Verifica si ya tenemos los datos de la membresía y genera el QR
@@ -133,7 +168,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         'fecha_fin': _expiryDate!.toIso8601String(),
       };
 
-      return Center(
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+        ),
         child: BarcodeWidget(
           barcode: Barcode.qrCode(), // Convertimos los datos del QR a un JSON
           data: jsonEncode(qrData),
@@ -154,12 +194,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Widget _buildMembershipCard() {
-  // Verificar si la fecha de expiración no es null
-  String expiryDateString = _expiryDate != null
-      ? DateFormat('dd MMMM yyyy').format(_expiryDate!) // Formatear fecha
-      : 'No disponible';
+    // Verificar si la fecha de expiración no es null
+    String expiryDateString = _expiryDate != null
+        ? DateFormat('dd MMMM yyyy').format(_expiryDate!) // Formatear fecha
+        : 'No disponible';
 
-  return MembershipCard(expiryDate: expiryDateString);
+    return MembershipCard(expiryDate: expiryDateString);
   }
 
   Widget _buildHeader() {
