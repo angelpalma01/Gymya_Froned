@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:intl/intl.dart'; // Para formatear la fecha y hora
+import 'package:gymya_users/app/Pagos/pagos.dart'; // Importa PagosScreen
+import 'package:gymya_users/app/Home/home.dart'; // Importa HomeScreen
+import 'package:gymya_users/app/Entrenadores/entrenadores.dart'; // Importa EntrenadoresScreen
+import 'package:gymya_users/app/horarios_gym/horariosgym.dart'; // Importa HorariosScreen
 
 class HistorialEntradasScreen extends StatefulWidget {
   final String token;
@@ -17,34 +22,57 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
   final _storage = FlutterSecureStorage();
   List<dynamic> _asistencias = [];
   bool _isLoading = true;
-  int _selectedIndex = 0; // Índice para el BottomNavigationBar
+  int _selectedIndex = 0;
 
-  // Función para manejar la selección del menú inferior
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
     });
 
-    // Navegar a otras pantallas según el índice seleccionado
     switch (index) {
       case 0:
-        Navigator.pushReplacementNamed(
+        Navigator.pushReplacement(
           context,
-          '/home',
-          arguments: {
-            'token': widget.token, // Pasa el token
-            'user': widget.user, // Pasa el usuario
-          },
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(
+              token: widget.token,
+              user: widget.user,
+            ),
+          ),
         );
         break;
       case 1:
-        // Navegar a la pantalla de "Couch"
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EntrenadoresScreen(
+              token: widget.token,
+              user: widget.user,
+            ),
+          ),
+        );
         break;
       case 2:
-        // Navegar a la pantalla de "Horarios"
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HorariosScreen(
+              token: widget.token,
+              user: widget.user,
+            ),
+          ),
+        );
         break;
       case 3:
-        // Navegar a la pantalla de "Pagos"
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PagosScreen(
+              token: widget.token,
+              user: widget.user,
+            ),
+          ),
+        );
         break;
     }
   }
@@ -69,7 +97,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
 
       if (data is Map<String, dynamic> && data['asistencias'] is List) {
         setState(() {
-          _asistencias = data['asistencias']; // Guardar las asistencias individuales
+          _asistencias = data['asistencias'];
           _isLoading = false;
         });
       } else {
@@ -100,6 +128,14 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
         ],
       ),
     );
+  }
+
+  // Función para formatear la fecha y hora
+  String _formatDateTime(String dateTimeString) {
+    final dateTime = DateTime.parse(dateTimeString);
+    final formattedDate = DateFormat('dd MMM yyyy').format(dateTime); // Formato de fecha: 13 Feb 2025
+    final formattedTime = DateFormat('hh:mm a').format(dateTime); // Formato de hora: 02:21 AM
+    return '$formattedDate\n$formattedTime'; // Fecha y hora en líneas separadas
   }
 
   @override
@@ -141,10 +177,12 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                   itemCount: _asistencias.length,
                   itemBuilder: (context, index) {
                     final asistencia = _asistencias[index];
-
-                    // Datos de la asistencia
                     final tipoAcceso = asistencia['tipo_acceso'] ?? "No especificado";
                     final fechaHora = asistencia['fecha_hora'] ?? "Sin fecha";
+
+                    // Ícono y color según el tipo de acceso
+                    final icon = tipoAcceso == 'Entrada' ? Icons.login : Icons.logout;
+                    final color = tipoAcceso == 'Entrada' ? Colors.green : Colors.red;
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
@@ -155,12 +193,12 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                       ),
                       child: ListTile(
                         leading: Icon(
-                          tipoAcceso == 'Entrada' ? Icons.login : Icons.logout,
-                          color: tipoAcceso == 'Entrada' ? Colors.green : Colors.red,
+                          icon,
+                          color: color,
                           size: 32,
                         ),
                         title: Text(
-                          '$tipoAcceso: $fechaHora',
+                          _formatDateTime(fechaHora), // Fecha y hora formateadas
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -168,14 +206,16 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                           ),
                         ),
                         subtitle: Text(
-                          'Tipo de acceso: $tipoAcceso',
-                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                          tipoAcceso, // Muestra si es "Entrada" o "Salida"
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
                         ),
                       ),
                     );
                   },
                 ),
-      // Agregar el BottomNavigationBar
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.black,

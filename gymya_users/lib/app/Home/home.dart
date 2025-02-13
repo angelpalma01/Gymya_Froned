@@ -19,6 +19,26 @@ class DashboardScreen extends StatefulWidget {
   _DashboardScreenState createState() => _DashboardScreenState();
 }
 
+
+class HomeScreen extends StatelessWidget {
+  final String token;
+  final Map<String, dynamic> user;
+
+  const HomeScreen({super.key, required this.token, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Inicio'),
+      ),
+      body: Center(
+        child: Text('Pantalla de Inicio'),
+      ),
+    );
+  }
+}
+
 class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
   CalendarFormat _calendarFormat = CalendarFormat.week;
