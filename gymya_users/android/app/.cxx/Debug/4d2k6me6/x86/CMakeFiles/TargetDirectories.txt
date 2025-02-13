@@ -1,0 +1,2 @@
+C:/Users/Usuario/OneDrive/Documentos/GitHub/Gymya_Froned/gymya_users/android/app/.cxx/Debug/4d2k6me6/x86/CMakeFiles/edit_cache.dir
+C:/Users/Usuario/OneDrive/Documentos/GitHub/Gymya_Froned/gymya_users/android/app/.cxx/Debug/4d2k6me6/x86/CMakeFiles/rebuild_cache.dir
