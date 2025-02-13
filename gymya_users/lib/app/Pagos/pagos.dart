@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../Home/home.dart'; // Importación corregida
 
 class PagosScreen extends StatefulWidget {
   final String token;
@@ -17,7 +16,7 @@ class _PagosScreenState extends State<PagosScreen> {
   int _selectedIndex = 0;
   bool isLoading = true;
   List<dynamic> planes = [];
-  bool membresiaActiva = true;
+  bool membresiaActiva = true; // Cambia según el estado de la membresía
 
   final String planesURL = 'https://api-gymya-api.onrender.com/api/admin/planes';
 
@@ -54,25 +53,15 @@ class _PagosScreenState extends State<PagosScreen> {
   }
 
   void _onItemTapped(int index) {
-    if (index == 0) {
-      // Navegar a HomeScreen
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(token: widget.token, user: widget.user),
-        ),
-      );
-    } else {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   void _showMembresiasModal(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.grey[900], // Fondo del modal en gris oscuro
       builder: (BuildContext context) {
         return Container(
           padding: EdgeInsets.all(16),
@@ -91,7 +80,7 @@ class _PagosScreenState extends State<PagosScreen> {
                     final plan = planes[index];
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
-                      color: Colors.grey[800],
+                      color: Colors.grey[800], // Color de las tarjetas dentro del modal
                       child: ListTile(
                         title: Text(
                           plan['nombre'],
@@ -122,16 +111,17 @@ class _PagosScreenState extends State<PagosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black, // Fondo de la pantalla en negro
       appBar: AppBar(
         title: Text('Pagos y Membresías', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
+        backgroundColor: Colors.black, // Fondo del AppBar en negro
       ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
+              // Encabezado con nombre de sección y descripción
               ShaderMask(
                 shaderCallback: (Rect bounds) {
                   return LinearGradient(
@@ -152,8 +142,9 @@ class _PagosScreenState extends State<PagosScreen> {
               ),
               SizedBox(height: 16),
 
+              // Card de Próximos Pagos
               Card(
-                color: Colors.grey[900],
+                color: Colors.grey[900], // Color de la tarjeta en gris oscuro
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -161,7 +152,7 @@ class _PagosScreenState extends State<PagosScreen> {
                     children: [
                       Text('Próximos Pagos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 8),
-                      Text('Subtotal: \$100.00', style: TextStyle(color: Colors.white)),
+                      Text('Subtotal: \$100.00', style: TextStyle(color: Colors.white)), // Cambia este valor dinámicamente
                       SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -169,17 +160,21 @@ class _PagosScreenState extends State<PagosScreen> {
                           ElevatedButton.icon(
                             icon: Icon(Icons.credit_card),
                             label: Text('Pagar con Tarjeta', style: TextStyle(color: Colors.white)),
-                            onPressed: () {},
+                            onPressed: () {
+                              // Lógica para pagar con tarjeta
+                            },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 123, 11, 131),
+                              backgroundColor: const Color.fromARGB(255, 123, 11, 131), // Color del botón en rojo
                             ),
                           ),
                           ElevatedButton.icon(
                             icon: Icon(Icons.history),
                             label: Text('Historial', style: TextStyle(color: Colors.white)),
-                            onPressed: () {},
+                            onPressed: () {
+                              // Lógica para ver el historial
+                            },
                             style: ElevatedButton.styleFrom(
-                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),// Color del botón en rojo
                             ),
                           ),
                         ],
@@ -190,8 +185,9 @@ class _PagosScreenState extends State<PagosScreen> {
               ),
               SizedBox(height: 16),
 
+              // Card de Membresía
               Card(
-                color: Colors.grey[900],
+                color: Colors.grey[900], // Color de la tarjeta en gris oscuro
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -207,17 +203,21 @@ class _PagosScreenState extends State<PagosScreen> {
                           ElevatedButton.icon(
                             icon: Icon(Icons.cancel),
                             label: Text('Cancelar', style: TextStyle(color: Colors.white)),
-                            onPressed: () {},
+                            onPressed: () {
+                              // Lógica para cancelar membresía
+                            },
                             style: ElevatedButton.styleFrom(
-                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12), // Color del botón en rojo
                             ),
                           ),
                           ElevatedButton.icon(
                             icon: Icon(Icons.history),
                             label: Text('Historial de Entradas', style: TextStyle(color: Colors.white)),
-                            onPressed: () {},
+                            onPressed: () {
+                              // Lógica para ver historial de entradas
+                            },
                             style: ElevatedButton.styleFrom(
-                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12), // Color del botón en rojo
                             ),
                           ),
                         ],
@@ -231,7 +231,7 @@ class _PagosScreenState extends State<PagosScreen> {
                             _showMembresiasModal(context);
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                            backgroundColor: const Color.fromARGB(255, 113, 19, 12), // Color del botón en rojo
                           ),
                         ),
                       ),
@@ -243,10 +243,11 @@ class _PagosScreenState extends State<PagosScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigationBar(),
+      bottomNavigationBar: _buildBottomNavigationBar(), // Menú inferior igual al Dashboard
     );
   }
 
+  // Menú inferior igual al Dashboard
   Widget _buildBottomNavigationBar() {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
