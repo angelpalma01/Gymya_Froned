@@ -1,10 +1,10 @@
 // este aparatdo es el home y dashboard_screen
-
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart'; // Para generar el código QR
+import 'package:gymya_users/app/historial/historial_entradas.dart';
 import 'dart:convert';
 import 'dart:ui'; // Importa ImageFilter para el efecto de blur
 
@@ -121,8 +121,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         VisitCard(
                           lastVisitDate: 'Última visita: 12 de Octubre 2023',
                           onEnterPressed: _toggleQRCode,
-                          onHistoryPressed: () {
-                            // Aquí puedes agregar la lógica para ver el historial
+                          onHistoryPressed: () { // Navegación a la página
+                            Navigator.push(
+                              context, 
+                              MaterialPageRoute(
+                                builder: (context) => HistorialEntradasScreen(
+                                  token: widget.token, 
+                                  user: widget.user
+                                ),
+                              ),
+                            );
                           },
                         ),
                         const SizedBox(height: 16),

@@ -10,8 +10,7 @@ class HistorialEntradasScreen extends StatefulWidget {
   const HistorialEntradasScreen({super.key, required this.token, required this.user});
 
   @override
-  _HistorialEntradasScreenState createState() =>
-      _HistorialEntradasScreenState();
+  _HistorialEntradasScreenState createState() => _HistorialEntradasScreenState();
 }
 
 class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
@@ -58,7 +57,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
 
   Future<void> _fetchAsistencias() async {
     final response = await http.get(
-      Uri.parse('https://api-gymya-api.onrender.com/api/user/asistencias'),
+      Uri.parse('https://api-gymya-api.onrender.com/api/asistenciasUser'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${widget.token}',
@@ -68,9 +67,9 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
 
-      if (data is Map<String, dynamic> && data['data'] is List) {
+      if (data is Map<String, dynamic> && data['asistencias'] is List) {
         setState(() {
-          _asistencias = data['data'];
+          _asistencias = data['asistencias']; // Guardar las asistencias emparejadas
           _isLoading = false;
         });
       } else {
@@ -142,8 +141,16 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                   itemCount: _asistencias.length,
                   itemBuilder: (context, index) {
                     final asistencia = _asistencias[index];
-                    final tipoAcceso = asistencia['tipo_acceso'] ?? "No especificado";
-                    final fechaHora = asistencia['fecha_hora'] ?? "Sin fecha";
+                    final entrada = asistencia['entrada'];
+                    final salida = asistencia['salida'];
+
+                    // Datos de la entrada
+                    final tipoAccesoEntrada = entrada['tipo_acceso'] ?? "No especificado";
+                    final fechaHoraEntrada = entrada['fecha_hora'] ?? "Sin fecha";
+
+                    // Datos de la salida (si existe)
+                    final tipoAccesoSalida = salida?['tipo_acceso'] ?? "No registrada";
+                    final fechaHoraSalida = salida?['fecha_hora'] ?? "Sin fecha";
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
@@ -152,28 +159,47 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: ListTile(
-                        leading: Icon(
-                          tipoAcceso.toLowerCase() == 'entrada'
-                              ? Icons.login
-                              : Icons.logout,
-                          color: tipoAcceso.toLowerCase() == 'entrada'
-                              ? Colors.green
-                              : Colors.red,
-                          size: 32,
-                        ),
-                        title: Text(
-                          'Fecha y hora: $fechaHora',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                      child: Column(
+                        children: [
+                          ListTile(
+                            leading: Icon(
+                              Icons.login,
+                              color: Colors.green,
+                              size: 32,
+                            ),
+                            title: Text(
+                              'Entrada: $fechaHoraEntrada',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Tipo de acceso: $tipoAccesoEntrada',
+                              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                            ),
                           ),
-                        ),
-                        subtitle: Text(
-                          'Tipo de acceso: $tipoAcceso',
-                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                        ),
+                          ListTile(
+                            leading: Icon(
+                              Icons.logout,
+                              color: Colors.red,
+                              size: 32,
+                            ),
+                            title: Text(
+                              'Salida: $fechaHoraSalida',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
+                            ),
+                            subtitle: Text(
+                              'Tipo de acceso: $tipoAccesoSalida',
+                              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
