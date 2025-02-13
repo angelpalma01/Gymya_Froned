@@ -45,9 +45,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  
-
   DateTime? _expiryDate;
+  String? _ultima;
   String? _membresiaId;
   String? _planId;
   bool isLoading = true;
@@ -56,10 +55,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Endpoint de membresía
   final String membresiaUrl = 'https://api-gymya-api.onrender.com/api/membresia';
 
+  // Endpoint de membresía
+  final String ultimaEntradaUrl = 'https://api-gymya-api.onrender.com/api/ultimaAsistencia';
+
   @override
   void initState() {
     super.initState();
     _fetchMembresiaData();
+    _fetchEntradaData();
   }
 
   Future<void> _fetchMembresiaData() async {
@@ -94,6 +97,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('Error: $error');
       setState(() {
         isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchEntradaData() async {
+    try {
+      final response = await http.get(
+        Uri.parse(ultimaEntradaUrl),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Parsear la respuesta como un Map (objeto JSON)
+        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+        // Verificar si la solicitud fue exitosa
+        if (responseBody['success'] == true) {
+          // Acceder al campo 'data'
+          final Map<String, dynamic> data = responseBody['data'];
+
+          // Verificar si el campo 'fecha_hora' existe y no es null
+          final fechaHora = data['fecha_hora'] as String?;
+
+          if (fechaHora != null) {
+            // Formatear la fecha y hora
+            final formattedDate = DateFormat('dd MMMM yyyy, hh:mm a').format(DateTime.parse(fechaHora));
+
+            setState(() {
+              _ultima = formattedDate; // Guardar la fecha formateada como String
+            });
+          } else {
+            // Manejar el caso en el que 'fecha_hora' es null
+            setState(() {
+              _ultima = 'No hay registros de entrada';
+            });
+          }
+        } else {
+          throw Exception('La solicitud no fue exitosa');
+        }
+      } else {
+        throw Exception('Error al obtener la última entrada');
+      }
+    } catch (error) {
+      print('Error: $error');
+      setState(() {
+        isLoading = false;
+        _ultima = 'Error al cargar la última entrada';
       });
     }
   }
@@ -164,7 +216,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ),
                         const SizedBox(height: 16),
                         VisitCard(
-                          lastVisitDate: 'Última visita: 12 de Octubre 2023',
+                          lastVisitDate: _ultima != null ? 'Última visita: $_ultima' : 'No hay registros de entrada', // Mostrar aquí la última entrada
                           onEnterPressed: _toggleQRCode,
                           onHistoryPressed: () { // Navegación a la página
                             Navigator.push(
