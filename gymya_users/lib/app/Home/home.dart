@@ -4,7 +4,8 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart'; // Para generar el código QR
-import 'package:gymya_users/app/historial/historial_entradas.dart';
+import 'package:gymya_users/app/historial/historial_entradas.dart'; //Registro de entradas
+import 'package:gymya_users/app/Pagos/pagos.dart'; //Ver pagos, renovar membresía, ver planes de membresía
 import 'dart:convert';
 import 'dart:ui'; // Importa ImageFilter para el efecto de blur
 
@@ -79,6 +80,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _selectedIndex = index;
     });
+
+    // Navegar a otras pantallas según el índice seleccionado
+    switch (index) {
+      case 0:
+        //Navigator.pushReplacementNamed(context, '/home');
+        break;
+      case 1:
+        //Navigator.pushReplacementNamed(context, '/couch');
+        break;
+      case 2:
+        //Navigator.pushReplacementNamed(context, '/horarios');
+        break;
+      case 3:
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => PagosScreen( // Página de Pagos
+            token: widget.token, // Asegúrate de pasar el token y el usuario si es necesario
+            user: widget.user, // Datos del usuario (pasa los correctos)
+          )),
+        );
+        break;
+    }
   }
 
   void _toggleQRCode() {
