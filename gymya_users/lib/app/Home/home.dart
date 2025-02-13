@@ -1,7 +1,4 @@
-<<<<<<< Updated upstream
 // este aparatdo es el home y dashboard_screen
-=======
->>>>>>> Stashed changes
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
@@ -11,11 +8,6 @@ import 'package:gymya_users/app/historial/historial_entradas.dart'; //Registro d
 import 'package:gymya_users/app/Pagos/pagos.dart'; //Ver pagos, renovar membresía, ver planes de membresía
 import 'dart:convert';
 import 'dart:ui'; // Importa ImageFilter para el efecto de blur
-
-// Importa las pantallas necesarias
-import '../Entrenadores/entrenadores.dart'; // Pantalla de entrenadores
-import '../horarios_gym/horariosgym.dart'; // Pantalla de horarios
-import '../Pagos/pagos.dart'; // Pantalla de pagos
 
 class DashboardScreen extends StatefulWidget {
   final String token;
@@ -28,7 +20,7 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  int _selectedIndex = 0; // Índice para la navegación del menú
+  int _selectedIndex = 0;
   CalendarFormat _calendarFormat = CalendarFormat.week;
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
@@ -41,16 +33,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool isLoading = true;
   bool showQRCode = false; // Nuevo estado para controlar la visibilidad del QR
 
-  
-
-  // Lista de pantallas
- final List<Widget> _screens = [
-  HomeContent(onEnterPressed: _toggleQRCode), // Pasa la función _toggleQRCode
-  EntrenadoresScreen(), // Pantalla de entrenadores
-  HorariosGymScreen(), // Pantalla de horarios
-  PagosScreen(), // Pantalla de pagos
-];
-
   // Endpoint de membresía
   final String membresiaUrl = 'https://api-gymya-api.onrender.com/api/membresia';
 
@@ -59,7 +41,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _fetchMembresiaData();
   }
-
 
   Future<void> _fetchMembresiaData() async {
     try {
@@ -75,14 +56,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final List<dynamic> data = jsonDecode(response.body); // Parseamos la respuesta como lista
 
         if (data.isNotEmpty) {
-          final membresia = data[0]; // Accedemos al primer elemento de la lista
+        final membresia = data[0]; // Accedemos al primer elemento de la lista
 
-          setState(() {
-            _expiryDate = DateTime.parse(membresia['fecha_fin']); // Fecha de fin de la membresía
-            _membresiaId = membresia['membresia_id'].toString(); // ID de la membresía
-            _planId = membresia['plan_id'].toString(); // ID del plan
-            isLoading = false;
-          });
+        setState(() {
+          _expiryDate = DateTime.parse(membresia['fecha_fin']); // Fecha de fin de la membresía
+          _membresiaId = membresia['membresia_id'].toString(); // ID de la membresía
+          _planId = membresia['plan_id'].toString(); // ID del plan
+          isLoading = false;
+        });
         } else {
           throw Exception('No se encontraron datos de membresía');
         }
@@ -99,7 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index; // Cambia el índice al seleccionar un ítem del menú
+      _selectedIndex = index;
     });
 
     // Navegar a otras pantallas según el índice seleccionado
@@ -139,7 +120,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           // Contenido principal
           SafeArea(
-<<<<<<< Updated upstream
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -186,11 +166,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ],
               ),
-=======
-            child: IndexedStack(
-              index: _selectedIndex, // Índice de la pantalla actual
-              children: _screens, // Lista de pantallas
->>>>>>> Stashed changes
             ),
           ),
 
@@ -251,72 +226,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Widget _buildBottomNavigationBar() {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: Colors.black,
-      selectedItemColor: Colors.purple,
-      unselectedItemColor: Colors.grey,
-      currentIndex: _selectedIndex,
-      onTap: _onItemTapped, // Cambia la pantalla al seleccionar un ítem
-      showUnselectedLabels: true,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
-        BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
-        BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
-      ],
-    );
-  }
-}
+  Widget _buildMembershipCard() {
+    // Verificar si la fecha de expiración no es null
+    String expiryDateString = _expiryDate != null
+        ? DateFormat('dd MMMM yyyy').format(_expiryDate!) // Formatear fecha
+        : 'No disponible';
 
-// Contenido de la pantalla de inicio (home.dart)
-class HomeContent extends StatelessWidget {
-  final VoidCallback onEnterPressed;
-
-  const HomeContent({required this.onEnterPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _buildHeader(),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SectionTitle(title: 'Estado de membresía:'),
-                const Text(
-                  'Mantén tu membresía activa para seguir disfrutando de los beneficios.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                _buildMembershipCard(), // Fecha fin de la membresía
-                const SizedBox(height: 16),
-                const SectionTitle(title: 'Entrada al gimnasio:'),
-                const Text(
-                  'Escanea el código QR para acceder al gimnasio.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                ),
-                const SizedBox(height: 16),
-                VisitCard(
-                  lastVisitDate: 'Última visita: 12 de Octubre 2023',
-                  onEnterPressed: onEnterPressed,
-                  onHistoryPressed: () {
-                    // Aquí puedes agregar la lógica para ver el historial
-                  },
-                ),
-                const SizedBox(height: 16),
-                const SectionTitle(title: 'Calendario:'),
-                _buildCalendar(),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
+    return MembershipCard(expiryDate: expiryDateString);
   }
 
   Widget _buildHeader() {
@@ -335,7 +251,7 @@ class HomeContent extends StatelessWidget {
               ).createShader(bounds);
             },
             child: Text(
-              'Hola, Usuario', // Cambia esto por el nombre del usuario
+              'Hola, ${widget.user['nombre_completo']}',
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 28,
@@ -352,20 +268,47 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget _buildMembershipCard() {
-    return MembershipCard(expiryDate: '31 de Diciembre 2023'); // Cambia esto por la fecha real
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.black,
+      selectedItemColor: Colors.purple,
+      unselectedItemColor: Colors.grey,
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      showUnselectedLabels: true,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
+        BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
+        BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
+      ],
+    );
   }
 
   Widget _buildCalendar() {
     return TableCalendar(
       firstDay: DateTime.utc(2020, 1, 1),
       lastDay: DateTime.utc(2030, 12, 31),
-      focusedDay: DateTime.now(),
-      calendarFormat: CalendarFormat.week,
-      selectedDayPredicate: (day) => false,
-      onDaySelected: (selectedDay, focusedDay) {},
-      onFormatChanged: (format) {},
-      onPageChanged: (focusedDay) {},
+      focusedDay: _focusedDay,
+      calendarFormat: _calendarFormat,
+      selectedDayPredicate: (day) {
+        return isSameDay(_selectedDay, day);
+      },
+      onDaySelected: (selectedDay, focusedDay) {
+        setState(() {
+          _selectedDay = selectedDay;
+          _focusedDay = focusedDay;
+        });
+      },
+      onFormatChanged: (format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      },
+      onPageChanged: (focusedDay) {
+        _focusedDay = focusedDay;
+      },
       calendarStyle: CalendarStyle(
         selectedDecoration: BoxDecoration(
           color: Colors.purple,
@@ -399,36 +342,6 @@ class HomeContent extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-// Pantalla de entrenadores (entrenadores.dart)
-class EntrenadoresScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Pantalla de Entrenadores', style: TextStyle(color: Colors.white)),
-    );
-  }
-}
-
-// Pantalla de horarios (horariosgym.dart)
-class HorariosGymScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Pantalla de Horarios', style: TextStyle(color: Colors.white)),
-    );
-  }
-}
-
-// Pantalla de pagos (pagos.dart)
-class PagosScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text('Pantalla de Pagos', style: TextStyle(color: Colors.white)),
     );
   }
 }
