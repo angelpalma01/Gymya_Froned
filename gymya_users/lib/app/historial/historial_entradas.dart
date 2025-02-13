@@ -69,7 +69,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
 
       if (data is Map<String, dynamic> && data['asistencias'] is List) {
         setState(() {
-          _asistencias = data['asistencias']; // Guardar las asistencias emparejadas
+          _asistencias = data['asistencias']; // Guardar las asistencias individuales
           _isLoading = false;
         });
       } else {
@@ -141,16 +141,10 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                   itemCount: _asistencias.length,
                   itemBuilder: (context, index) {
                     final asistencia = _asistencias[index];
-                    final entrada = asistencia['entrada'];
-                    final salida = asistencia['salida'];
 
-                    // Datos de la entrada
-                    final tipoAccesoEntrada = entrada['tipo_acceso'] ?? "No especificado";
-                    final fechaHoraEntrada = entrada['fecha_hora'] ?? "Sin fecha";
-
-                    // Datos de la salida (si existe)
-                    final tipoAccesoSalida = salida?['tipo_acceso'] ?? "No registrada";
-                    final fechaHoraSalida = salida?['fecha_hora'] ?? "Sin fecha";
+                    // Datos de la asistencia
+                    final tipoAcceso = asistencia['tipo_acceso'] ?? "No especificado";
+                    final fechaHora = asistencia['fecha_hora'] ?? "Sin fecha";
 
                     return Card(
                       margin: EdgeInsets.symmetric(vertical: 8),
@@ -159,47 +153,24 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: Icon(
-                              Icons.login,
-                              color: Colors.green,
-                              size: 32,
-                            ),
-                            title: Text(
-                              'Entrada: $fechaHoraEntrada',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Tipo de acceso: $tipoAccesoEntrada',
-                              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                            ),
+                      child: ListTile(
+                        leading: Icon(
+                          tipoAcceso == 'Entrada' ? Icons.login : Icons.logout,
+                          color: tipoAcceso == 'Entrada' ? Colors.green : Colors.red,
+                          size: 32,
+                        ),
+                        title: Text(
+                          '$tipoAcceso: $fechaHora',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
-                          ListTile(
-                            leading: Icon(
-                              Icons.logout,
-                              color: Colors.red,
-                              size: 32,
-                            ),
-                            title: Text(
-                              'Salida: $fechaHoraSalida',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                              ),
-                            ),
-                            subtitle: Text(
-                              'Tipo de acceso: $tipoAccesoSalida',
-                              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-                            ),
-                          ),
-                        ],
+                        ),
+                        subtitle: Text(
+                          'Tipo de acceso: $tipoAcceso',
+                          style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                        ),
                       ),
                     );
                   },
