@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../Home/home.dart'; // Importación corregida
 
 class PagosScreen extends StatefulWidget {
   final String token;
@@ -15,14 +16,15 @@ class PagosScreen extends StatefulWidget {
 class _PagosScreenState extends State<PagosScreen> {
   int _selectedIndex = 0;
   bool isLoading = true;
-  List<dynamic> planes = []; // Almacena los datos de los planes
+  List<dynamic> planes = [];
+  bool membresiaActiva = true;
 
   final String planesURL = 'https://api-gymya-api.onrender.com/api/admin/planes';
 
   @override
   void initState() {
     super.initState();
-    _fetchPlanData(); // Llamada para obtener los datos al iniciar la pantalla
+    _fetchPlanData();
   }
 
   Future<void> _fetchPlanData() async {
@@ -35,12 +37,10 @@ class _PagosScreenState extends State<PagosScreen> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> data = jsonDecode(response.body); // Decodificar la respuesta JSON
-
-        // Actualizamos el estado con los datos recibidos
+        final List<dynamic> data = jsonDecode(response.body);
         setState(() {
-          planes = data; // Guardar los datos de planes
-          isLoading = false; // Desactivar el estado de carga
+          planes = data;
+          isLoading = false;
         });
       } else {
         throw Exception('Error al obtener los planes de membresía');
@@ -53,54 +53,215 @@ class _PagosScreenState extends State<PagosScreen> {
     }
   }
 
-  // Función para manejar la selección del BottomNavigationBar
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == 0) {
+      // Navegar a HomeScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(token: widget.token, user: widget.user),
+        ),
+      );
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _showMembresiasModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey[900],
+      builder: (BuildContext context) {
+        return Container(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Tipos de Membresías',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white),
+              ),
+              SizedBox(height: 16),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: planes.length,
+                  itemBuilder: (context, index) {
+                    final plan = planes[index];
+                    return Card(
+                      margin: EdgeInsets.symmetric(vertical: 8),
+                      color: Colors.grey[800],
+                      child: ListTile(
+                        title: Text(
+                          plan['nombre'],
+                          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(plan['descripcion'], style: TextStyle(color: Colors.white)),
+                            Text('Costo: \$${plan['costo']}', style: TextStyle(color: Colors.white)),
+                            if (plan['duracion_dias'] != null) Text('Duración (días): ${plan['duracion_dias']}', style: TextStyle(color: Colors.white)),
+                            if (plan['duracion_semanas'] != null) Text('Duración (semanas): ${plan['duracion_semanas']}', style: TextStyle(color: Colors.white)),
+                            if (plan['duracion_meses'] != null) Text('Duración (meses): ${plan['duracion_meses']}', style: TextStyle(color: Colors.white)),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text('Planes de Membresía'),
+        title: Text('Pagos y Membresías', style: TextStyle(color: Colors.white)),
+        backgroundColor: Colors.black,
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator()) // Mostrar un indicador de carga mientras se obtienen los datos
-          : ListView.builder(
-              itemCount: planes.length,
-              itemBuilder: (context, index) {
-                final plan = planes[index];
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return LinearGradient(
+                    colors: [Colors.purple, Colors.red],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ).createShader(bounds);
+                },
+                child: Text(
+                  'Mi Billetera',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Consulta tus pagos pendientes y renueva tu membresía fácilmente.',
+                style: TextStyle(color: Colors.grey, fontSize: 14),
+              ),
+              SizedBox(height: 16),
 
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                  child: ListTile(
-                    title: Text(plan['nombre'], style: TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(plan['descripcion']),
-                        Text('Costo: \$${plan['costo']}'),
-                        if (plan['duracion_dias'] != null) Text('Duración (días): ${plan['duracion_dias']}'),
-                        if (plan['duracion_semanas'] != null) Text('Duración (semanas): ${plan['duracion_semanas']}'),
-                        if (plan['duracion_meses'] != null) Text('Duración (meses): ${plan['duracion_meses']}'),
-                      ],
-                    ),
+              Card(
+                color: Colors.grey[900],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Próximos Pagos', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                      SizedBox(height: 8),
+                      Text('Subtotal: \$100.00', style: TextStyle(color: Colors.white)),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.credit_card),
+                            label: Text('Pagar con Tarjeta', style: TextStyle(color: Colors.white)),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(255, 123, 11, 131),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.history),
+                            label: Text('Historial', style: TextStyle(color: Colors.white)),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              },
-            ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
-          BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
-        ],
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
+                ),
+              ),
+              SizedBox(height: 16),
+
+              Card(
+                color: Colors.grey[900],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Membresía', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                      SizedBox(height: 8),
+                      Text('Estado: ${membresiaActiva ? 'Activa' : 'Inactiva'}', style: TextStyle(color: membresiaActiva ? Colors.green : Colors.red)),
+                      SizedBox(height: 16),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.cancel),
+                            label: Text('Cancelar', style: TextStyle(color: Colors.white)),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                            ),
+                          ),
+                          ElevatedButton.icon(
+                            icon: Icon(Icons.history),
+                            label: Text('Historial de Entradas', style: TextStyle(color: Colors.white)),
+                            onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                               backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+                      Center(
+                        child: ElevatedButton.icon(
+                          icon: Icon(Icons.list),
+                          label: Text('Ver Tipos de Membresías', style: TextStyle(color: Colors.white)),
+                          onPressed: () {
+                            _showMembresiasModal(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 113, 19, 12),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
+    );
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return BottomNavigationBar(
+      type: BottomNavigationBarType.fixed,
+      backgroundColor: Colors.black,
+      selectedItemColor: Colors.purple,
+      unselectedItemColor: Colors.grey,
+      currentIndex: _selectedIndex,
+      onTap: _onItemTapped,
+      showUnselectedLabels: true,
+      items: const [
+        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
+        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
+        BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
+        BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
+      ],
     );
   }
 }

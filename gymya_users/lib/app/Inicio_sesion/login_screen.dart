@@ -130,33 +130,34 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
+ @override
+Widget build(BuildContext context) {
+  final screenHeight = MediaQuery.of(context).size.height;
+  final screenWidth = MediaQuery.of(context).size.width;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Fondo con blur solo ocupando la mitad de la pantalla
-          Positioned.fill(
-            child: FractionallySizedBox(
-              alignment: Alignment.topCenter,
-              heightFactor: 0.5, // Solo ocupa la mitad de la pantalla
-              child: ImageFiltered(
-                imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                child: Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('lib/Recursos/Img/Bienvenida.jpg'),
-                      fit: BoxFit.cover,
-                    ),
+  return Scaffold(
+    body: Stack(
+      children: [
+        // Fondo con blur solo ocupando la mitad de la pantalla
+        Positioned.fill(
+          child: FractionallySizedBox(
+            alignment: Alignment.topCenter,
+            heightFactor: 0.5, // Solo ocupa la mitad de la pantalla
+            child: ImageFiltered(
+              imageFilter: ui.ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('lib/Recursos/Img/Bienvenida.jpg'),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
             ),
           ),
-          Center(
+        ),
+        Center(
+          child: SingleChildScrollView( // Envuelve el contenido en un SingleChildScrollView
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -279,8 +280,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 }

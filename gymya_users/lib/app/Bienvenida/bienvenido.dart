@@ -1,5 +1,3 @@
-//Parte de bienevnida cuando se abre la app
-
 import 'package:flutter/material.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -11,49 +9,49 @@ class WelcomeScreen extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
-        width: screenWidth,
-        height: screenHeight,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('lib/Recursos/Img/Bienvenida.jpg'),
-            fit: BoxFit.cover,
+      resizeToAvoidBottomInset: true, // Evita que el teclado bloquee la pantalla
+      body: SingleChildScrollView(
+        child: Container(
+          width: screenWidth,
+          constraints: BoxConstraints(minHeight: screenHeight), // Permite scroll
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('lib/Recursos/Img/Bienvenida.jpg'),
+              fit: BoxFit.cover,
+            ),
           ),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Logo de la aplicación
-            SizedBox(height: screenHeight * 0.090),
-            Container(
-              height: screenHeight * 0.15,
-              width: screenHeight * 0.15,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage('lib/Recursos/Img/Logo.jpg'),
-                  fit: BoxFit.cover,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(height: screenHeight * 0.08),
+              Container(
+                height: screenHeight * 0.14,
+                width: screenHeight * 0.14,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
+                    image: AssetImage('lib/Recursos/Img/Logo.jpg'),
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.01),
-            // Título "GymYa"
-            Text(
-              'GymYa',
-              style: TextStyle(
-                fontSize: screenWidth * 0.10,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+              SizedBox(height: screenHeight * 0.01),
+              Text(
+                'GymYa',
+                style: TextStyle(
+                  fontSize: screenWidth * 0.09,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-            ),
-            SizedBox(height: screenHeight * 0.14),
-            // Botón "Iniciar sesión"
-            AnimatedButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/login'); // Navegar al login
-              },
-            ),
-          ],
+              SizedBox(height: screenHeight * 0.12),
+              AnimatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '/login');
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -84,11 +82,11 @@ class _AnimatedButtonState extends State<AnimatedButton> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 100),
         curve: Curves.easeInOut,
-        padding: EdgeInsets.symmetric(vertical: screenWidth * 0.04),
-        width: screenWidth * 0.7,
-        constraints: const BoxConstraints(minWidth: 200, maxWidth: 400),
+        padding: EdgeInsets.symmetric(vertical: screenWidth * 0.03),
+        width: screenWidth * 0.6,
+        constraints: const BoxConstraints(minWidth: 180, maxWidth: 350),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(screenWidth * 0.08),
+          borderRadius: BorderRadius.circular(screenWidth * 0.07),
           gradient: LinearGradient(
             colors: _isPressed
                 ? [const Color(0xFFB20E42), const Color(0xFF7E1ADB)]
@@ -99,7 +97,7 @@ class _AnimatedButtonState extends State<AnimatedButton> {
           child: Text(
             'Iniciar sesión',
             style: TextStyle(
-              fontSize: screenWidth * 0.05,
+              fontSize: screenWidth * 0.045,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
