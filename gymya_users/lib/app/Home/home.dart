@@ -1,11 +1,12 @@
-// este aparatdo es el home y dashboard_screen
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 import 'package:barcode_widget/barcode_widget.dart'; // Para generar el código QR
-import 'package:gymya_users/app/historial/historial_entradas.dart'; //Registro de entradas
-import 'package:gymya_users/app/Pagos/pagos.dart'; //Ver pagos, renovar membresía, ver planes de membresía
+import 'package:gymya_users/app/historial/historial_entradas.dart'; // Registro de entradas
+import 'package:gymya_users/app/Pagos/pagos.dart'; // Ver pagos, renovar membresía, ver planes de membresía
+import 'package:gymya_users/app/Entrenadores/entrenadores.dart'; // Pantalla de Entrenadores (Couch)
+import 'package:gymya_users/app/horarios_gym/horariosgym.dart'; // Pantalla de Horarios
 import 'dart:convert';
 import 'dart:ui'; // Importa ImageFilter para el efecto de blur
 
@@ -18,7 +19,6 @@ class DashboardScreen extends StatefulWidget {
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
 }
-
 
 class HomeScreen extends StatelessWidget {
   final String token;
@@ -58,11 +58,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
   // Endpoint de membresía
   final String ultimaEntradaUrl = 'https://api-gymya-api.onrender.com/api/ultimaAsistencia';
 
+  // Lista de pantallas
+  final List<Widget> _screens = [];
+
   @override
   void initState() {
     super.initState();
     _fetchMembresiaData();
     _fetchEntradaData();
+
+    // Inicializar las pantallas
+    _screens.addAll([
+      _buildHomeContent(),
+      EntrenadoresScreen(token: widget.token, user: widget.user),
+      HorariosScreen(token: widget.token, user: widget.user),
+      PagosScreen(token: widget.token, user: widget.user),
+    ]);
   }
 
   Future<void> _fetchMembresiaData() async {
@@ -79,14 +90,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final List<dynamic> data = jsonDecode(response.body); // Parseamos la respuesta como lista
 
         if (data.isNotEmpty) {
-        final membresia = data[0]; // Accedemos al primer elemento de la lista
+          final membresia = data[0]; // Accedemos al primer elemento de la lista
 
-        setState(() {
-          _expiryDate = DateTime.parse(membresia['fecha_fin']); // Fecha de fin de la membresía
-          _membresiaId = membresia['membresia_id'].toString(); // ID de la membresía
-          _planId = membresia['plan_id'].toString(); // ID del plan
-          isLoading = false;
-        });
+          setState(() {
+            _expiryDate = DateTime.parse(membresia['fecha_fin']); // Fecha de fin de la membresía
+            _membresiaId = membresia['membresia_id'].toString(); // ID de la membresía
+            _planId = membresia['plan_id'].toString(); // ID del plan
+            isLoading = false;
+          });
         } else {
           throw Exception('No se encontraron datos de membresía');
         }
@@ -154,34 +165,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       _selectedIndex = index;
     });
-
-    // Navegar a otras pantallas según el índice seleccionado
-    switch (index) {
-      case 0:
-        //Navigator.pushReplacementNamed(context, '/home');
-        break;
-      case 1:
-        //Navigator.pushReplacementNamed(context, '/couch');
-        break;
-      case 2:
-        //Navigator.pushReplacementNamed(context, '/horarios');
-        break;
-      case 3:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PagosScreen( // Página de Pagos
-            token: widget.token, // Asegúrate de pasar el token y el usuario si es necesario
-            user: widget.user, // Datos del usuario (pasa los correctos)
-          )),
-        );
-        break;
-    }
   }
 
   void _toggleQRCode() {
     setState(() {
       showQRCode = !showQRCode;
     });
+  }
+
+  Widget _buildHomeContent() {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          _buildHeader(),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SectionTitle(title: 'Estado de membresía:'),
+                const Text(
+                  'Mantén tu membresía activa para seguir disfrutando de los beneficios.',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                _buildMembershipCard(), // Fecha fin de la membresía
+                const SizedBox(height: 16),
+                const SectionTitle(title: 'Entrada al gimnasio:'),
+                const Text(
+                  'Escanea el código QR para acceder al gimnasio.',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                VisitCard(
+                  lastVisitDate: _ultima != null ? 'Última visita: $_ultima' : 'No hay registros de entrada', // Mostrar aquí la última entrada
+                  onEnterPressed: _toggleQRCode,
+                  onHistoryPressed: () { // Navegación a la página
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => HistorialEntradasScreen(
+                          token: widget.token,
+                          user: widget.user,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+                const SectionTitle(title: 'Calendario:'),
+                _buildCalendar(),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -192,52 +231,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
         children: [
           // Contenido principal
           SafeArea(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  _buildHeader(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SectionTitle(title: 'Estado de membresía:'),
-                        const Text(
-                          'Mantén tu membresía activa para seguir disfrutando de los beneficios.',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildMembershipCard(), // Fecha fin de la membresía
-                        const SizedBox(height: 16),
-                        const SectionTitle(title: 'Entrada al gimnasio:'),
-                        const Text(
-                          'Escanea el código QR para acceder al gimnasio.',
-                          style: TextStyle(color: Colors.grey, fontSize: 14),
-                        ),
-                        const SizedBox(height: 16),
-                        VisitCard(
-                          lastVisitDate: _ultima != null ? 'Última visita: $_ultima' : 'No hay registros de entrada', // Mostrar aquí la última entrada
-                          onEnterPressed: _toggleQRCode,
-                          onHistoryPressed: () { // Navegación a la página
-                            Navigator.push(
-                              context, 
-                              MaterialPageRoute(
-                                builder: (context) => HistorialEntradasScreen(
-                                  token: widget.token, 
-                                  user: widget.user
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
-                        const SectionTitle(title: 'Calendario:'),
-                        _buildCalendar(),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _screens,
             ),
           ),
 
@@ -350,10 +346,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
       onTap: _onItemTapped,
       showUnselectedLabels: true,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-        BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
-        BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
-        BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Inicio',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.fitness_center),
+          label: 'Couch',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.schedule),
+          label: 'Horarios',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.payment),
+          label: 'Pagos',
+        ),
       ],
     );
   }
