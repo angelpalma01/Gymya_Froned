@@ -91,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Uri.parse(apiUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'username': _usernameController.text,
+          'email': _usernameController.text,
           'password': _passwordController.text,
         }),
       );
@@ -216,7 +216,7 @@ Widget build(BuildContext context) {
                       TextField(
                         controller: _usernameController,
                         decoration: InputDecoration(
-                          labelText: 'Username',
+                          labelText: 'Email',
                           border: UnderlineInputBorder(),
                         ),
                       ),
