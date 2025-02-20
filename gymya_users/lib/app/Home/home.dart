@@ -13,8 +13,9 @@ import 'dart:ui'; // Importa ImageFilter para el efecto de blur
 class DashboardScreen extends StatefulWidget {
   final String token;
   final Map<String, dynamic> user;
+  final String membresiaId; // Añadimos el _id de la membresía
 
-  const DashboardScreen({super.key, required this.token, required this.user});
+  const DashboardScreen({super.key, required this.token, required this.user, required this.membresiaId});
 
   @override
   _DashboardScreenState createState() => _DashboardScreenState();
@@ -24,7 +25,7 @@ class HomeScreen extends StatelessWidget {
   final String token;
   final Map<String, dynamic> user;
 
-  const HomeScreen({super.key, required this.token, required this.user});
+  const HomeScreen({super.key, required this.token, required this.user,});
 
   @override
   Widget build(BuildContext context) {
@@ -53,9 +54,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   bool showQRCode = false; // Nuevo estado para controlar la visibilidad del QR
 
   // Endpoint de membresía
-  final String membresiaUrl = 'https://api-gymya-api.onrender.com/api/membresia';
-
-  // Endpoint de membresía
   final String ultimaEntradaUrl = 'https://api-gymya-api.onrender.com/api/ultimaAsistencia';
 
   // Lista de pantallas
@@ -72,14 +70,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
       _buildHomeContent(),
       EntrenadoresScreen(token: widget.token, user: widget.user),
       HorariosScreen(token: widget.token, user: widget.user),
-      PagosScreen(token: widget.token, user: widget.user),
+      PagosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId,),
     ]);
   }
 
   Future<void> _fetchMembresiaData() async {
     try {
       final response = await http.get(
-        Uri.parse(membresiaUrl),
+        Uri.parse('https://api-gymya-api.onrender.com/api/${widget.membresiaId}'),
         headers: {
           'Authorization': 'Bearer ${widget.token}', // Pasa el token en la cabecera
         },
@@ -87,20 +85,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       if (response.statusCode == 200) {
         // Parsear los datos de la respuesta
-        final List<dynamic> data = jsonDecode(response.body); // Parseamos la respuesta como lista
+        final data = jsonDecode(response.body); // Parseamos la respuesta como un objeto Json
 
-        if (data.isNotEmpty) {
-          final membresia = data[0]; // Accedemos al primer elemento de la lista
-
-          setState(() {
-            _expiryDate = DateTime.parse(membresia['fecha_fin']); // Fecha de fin de la membresía
-            _membresiaId = membresia['membresia_id'].toString(); // ID de la membresía
-            _planId = membresia['plan_id'].toString(); // ID del plan
-            isLoading = false;
-          });
-        } else {
-          throw Exception('No se encontraron datos de membresía');
-        }
+        setState(() {
+          _expiryDate = DateTime.parse(data['fecha_fin']); // Fecha de fin de la membresía
+          _membresiaId= data['_id'].toString(); // ID de la membresía
+          _planId = data['plan_id'].toString(); // ID del plan
+          isLoading = false;
+        });
       } else {
         throw Exception('Error al obtener la membresía');
       }
@@ -207,6 +199,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         builder: (context) => HistorialEntradasScreen(
                           token: widget.token,
                           user: widget.user,
+                          membresiaId: widget.membresiaId,
                         ),
                       ),
                     );

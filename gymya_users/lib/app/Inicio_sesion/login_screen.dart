@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui' as ui; // Importar 'dart:ui' con el alias 'ui'
-import '../Home/home.dart'; // Importa el archivo del dashboard
+import 'package:gymya_users/app/Home/membresias.dart'; // Importar el archivo de la lista
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => DashboardScreen(token: token, user: user),
+            builder: (context) => MembresiasList(token: token, user: user),
           ),
         );
       } else {

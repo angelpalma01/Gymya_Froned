@@ -11,8 +11,9 @@ import 'package:gymya_users/app/horarios_gym/horariosgym.dart'; // Importa Horar
 class HistorialEntradasScreen extends StatefulWidget {
   final String token;
   final Map<String, dynamic> user;
+  final String membresiaId; // Añadimos el _id de la membresía
 
-  const HistorialEntradasScreen({super.key, required this.token, required this.user});
+  const HistorialEntradasScreen({super.key, required this.token, required this.user, required this.membresiaId});
 
   @override
   _HistorialEntradasScreenState createState() => _HistorialEntradasScreenState();
@@ -70,6 +71,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
             builder: (context) => PagosScreen(
               token: widget.token,
               user: widget.user,
+              membresiaId: widget.membresiaId,
             ),
           ),
         );

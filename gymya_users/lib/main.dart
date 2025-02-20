@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
               return ds_screen.DashboardScreen(
                 token: args['token'],
                 user: args['user'],
+                membresiaId: args['membresia_id'],
               );
             },
           );

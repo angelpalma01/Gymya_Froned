@@ -5,8 +5,9 @@ import 'dart:convert';
 class PagosScreen extends StatefulWidget {
   final String token;
   final Map<String, dynamic> user;
+  final String membresiaId; // Añadimos el _id de la membresía
 
-  const PagosScreen({super.key, required this.token, required this.user});
+  const PagosScreen({super.key, required this.token, required this.user, required this.membresiaId});
 
   @override
   _PagosScreenState createState() => _PagosScreenState();
@@ -18,7 +19,6 @@ class _PagosScreenState extends State<PagosScreen> {
   List<dynamic> planes = [];
   bool membresiaActiva = true; // Cambia según el estado de la membresía
 
-  final String planesURL = 'https://api-gymya-api.onrender.com/api/admin/planes';
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _PagosScreenState extends State<PagosScreen> {
   Future<void> _fetchPlanData() async {
     try {
       final response = await http.get(
-        Uri.parse(planesURL),
+        Uri.parse('https://api-gymya-api.onrender.com/api/${widget.membresiaId}/planesUser'),
         headers: {
           'Authorization': 'Bearer ${widget.token}'
         },
