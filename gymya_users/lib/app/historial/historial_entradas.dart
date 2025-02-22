@@ -87,7 +87,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
 
   Future<void> _fetchAsistencias() async {
     final response = await http.get(
-      Uri.parse('https://api-gymya-api.onrender.com/api/asistenciasUser'),
+      Uri.parse('https://api-gymya-api.onrender.com/api/${widget.membresiaId}/asistenciasUser'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ${widget.token}',

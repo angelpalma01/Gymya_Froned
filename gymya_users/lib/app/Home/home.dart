@@ -46,15 +46,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
-  DateTime? _expiryDate;
   String? _ultima;
   String? _membresiaId;
   String? _planId;
+  String? _expiryDate;
   bool isLoading = true;
   bool showQRCode = false; // Nuevo estado para controlar la visibilidad del QR
-
-  // Endpoint de membresía
-  final String ultimaEntradaUrl = 'https://api-gymya-api.onrender.com/api/ultimaAsistencia';
 
   // Lista de pantallas
   final List<Widget> _screens = [];
@@ -86,12 +83,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (response.statusCode == 200) {
         // Parsear los datos de la respuesta
         final data = jsonDecode(response.body); // Parseamos la respuesta como un objeto Json
+        final expiryDate = data['fecha_fin'];
 
         setState(() {
-          _expiryDate = DateTime.parse(data['fecha_fin']); // Fecha de fin de la membresía
           _membresiaId= data['_id'].toString(); // ID de la membresía
           _planId = data['plan_id'].toString(); // ID del plan
-          isLoading = false;
+          _expiryDate = expiryDate;
         });
       } else {
         throw Exception('Error al obtener la membresía');
@@ -107,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Future<void> _fetchEntradaData() async {
     try {
       final response = await http.get(
-        Uri.parse(ultimaEntradaUrl),
+        Uri.parse('https://api-gymya-api.onrender.com/api/${widget.membresiaId}/ultimaAsistencia'),
         headers: {
           'Authorization': 'Bearer ${widget.token}',
         },
@@ -118,7 +115,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         final Map<String, dynamic> responseBody = jsonDecode(response.body);
 
         // Verificar si la solicitud fue exitosa
-        if (responseBody['success'] == true) {
+        if (responseBody['success'] != null && responseBody['success'] == true) {
           // Acceder al campo 'data'
           final Map<String, dynamic> data = responseBody['data'];
 
@@ -128,7 +125,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           if (fechaHora != null) {
             // Formatear la fecha y hora
             final formattedDate = DateFormat('dd MMMM yyyy, hh:mm a').format(DateTime.parse(fechaHora));
-
             setState(() {
               _ultima = formattedDate; // Guardar la fecha formateada como String
             });
@@ -148,7 +144,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       print('Error: $error');
       setState(() {
         isLoading = false;
-        _ultima = 'Error al cargar la última entrada';
       });
     }
   }
@@ -163,6 +158,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() {
       showQRCode = !showQRCode;
     });
+  }
+
+  // Función para formatear la fecha y hora
+  String _formatDateTime(String dateTimeString) {
+    final dateTime = DateTime.parse(dateTimeString);
+    final formattedDate = DateFormat('dd MMM yyyy').format(dateTime); // Formato de fecha: 13 Feb 2025
+    final formattedTime = DateFormat('hh:mm a').format(dateTime); // Formato de hora: 02:21 AM
+    return '$formattedDate\n$formattedTime'; // Fecha y hora en líneas separadas
   }
 
   Widget _buildHomeContent() {
@@ -181,9 +184,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
                 const SizedBox(height: 16),
-                _buildMembershipCard(), // Fecha fin de la membresía
-                const SizedBox(height: 16),
-                const SectionTitle(title: 'Entrada al gimnasio:'),
+                MembershipCard(
+                  expiryDate: _expiryDate != null ? _formatDateTime(_expiryDate!) : 'Cargando...',
+                ),
                 const Text(
                   'Escanea el código QR para acceder al gimnasio.',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
@@ -255,11 +258,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildQRCode() {
     // Verifica si ya tenemos los datos de la membresía y genera el QR
-    if (_membresiaId != null && _planId != null && _expiryDate != null) {
+    if (_membresiaId != null && _planId != null) {
       final qrData = {
         'membresia_id': _membresiaId,
         'plan_id': _planId,
-        'fecha_fin': _expiryDate!.toIso8601String(),
       };
 
       return Container(
@@ -287,14 +289,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Widget _buildMembershipCard() {
-    // Verificar si la fecha de expiración no es null
-    String expiryDateString = _expiryDate != null
-        ? DateFormat('dd MMMM yyyy').format(_expiryDate!) // Formatear fecha
-        : 'No disponible';
-
-    return MembershipCard(expiryDate: expiryDateString);
-  }
 
   Widget _buildHeader() {
     return Container(
