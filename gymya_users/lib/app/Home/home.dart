@@ -7,7 +7,7 @@ import 'package:gymya_users/app/Home/widgets/membership_card.dart';
 import 'package:gymya_users/app/Home/widgets/visit_card.dart';
 import 'package:gymya_users/app/Home/widgets/calendar.dart';
 import 'package:gymya_users/app/Home/widgets/qr_code.dart';
-import 'package:gymya_users/app/historial/historial_entradas.dart';
+import 'package:gymya_users/app/Asistencias/historial_entradas.dart';
 import 'package:gymya_users/app/Entrenadores/entrenadores.dart';
 import 'package:gymya_users/app/horarios_gym/horariosgym.dart';
 import 'package:gymya_users/app/Pagos/pagos.dart';
