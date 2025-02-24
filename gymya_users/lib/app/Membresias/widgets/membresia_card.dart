@@ -32,21 +32,21 @@ class MembresiaCard extends StatelessWidget {
                 membresia['nombre_plan'] ?? 'Nombre no disponible',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 4),
+              Text(
+                'Acceso a: ${membresia['gimnasios'].join(', ')}',
+                style: TextStyle(color: Colors.grey),
+              ),
+              SizedBox(height: 4),
               Text(
                 'Disponible hasta: ${formatFecha(fechaFin)}',
                 style: TextStyle(color: Colors.white60),
               ),
-              SizedBox(height: 8),
-              Text(
-                'Acceso a los gimnasios: ${membresia['gimnasios'].join(', ')}',
-                style: TextStyle(color: Colors.grey),
-              ),
-              SizedBox(height: 8),
+              SizedBox(height: 4),
               Text(
                 'Estado: $estado',
                 style: TextStyle(

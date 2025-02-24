@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gymya_users/app/funciones/listaMembresias.dart';
 import 'package:gymya_users/app/Home/home.dart';
 import 'package:gymya_users/app/Membresias/widgets/membresia_card.dart';
+import 'package:gymya_users/app/Membresias/widgets/header.dart'; // Importa el nuevo header
 
 class MembresiasList extends StatefulWidget {
   final String token;
@@ -57,26 +58,25 @@ class _MembresiasListState extends State<MembresiasList> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      appBar: AppBar(
-        title: Text(
-          'Selecciona una Membresía',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.black,
-        iconTheme: IconThemeData(color: Colors.white),
+      body: Column(
+        children: [
+          const Header(), // Usa el nuevo header sin parámetros
+          Expanded(
+            child: isLoading
+                ? Center(child: CircularProgressIndicator(color: Colors.purple))
+                : ListView.builder(
+                    itemCount: membresias.length,
+                    itemBuilder: (context, index) {
+                      final membresia = membresias[index];
+                      return MembresiaCard(
+                        membresia: membresia,
+                        onTap: () => goToNextScreen(membresia['membresia_id']),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator(color: Colors.purple))
-          : ListView.builder(
-              itemCount: membresias.length,
-              itemBuilder: (context, index) {
-                final membresia = membresias[index];
-                return MembresiaCard(
-                  membresia: membresia,
-                  onTap: () => goToNextScreen(membresia['membresia_id']),
-                );
-              },
-            ),
     );
   }
 }

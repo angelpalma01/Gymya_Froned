@@ -59,9 +59,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       final membresiaData = await _datosMembresia.fetchMembresiaData();
       final ultimaEntradaData = await _ultimaEntrada.fetchUltimaEntrada();
 
-      print('Datos de membresía: $membresiaData'); // Depuración
-      print('Última entrada: $ultimaEntradaData'); // Depuración
-
       setState(() {
         _membresiaData = membresiaData;
         _ultimaEntradaData = ultimaEntradaData['data'];
