@@ -57,13 +57,13 @@ class PlanDetailsCard extends StatelessWidget {
             ),
             SizedBox(height: 8),
             Text(
-              '\$${plan['costo'] ?? 'Desconocido'}',
-              style: TextStyle(fontSize: 16, color: Colors.greenAccent),
+              obtenerDuracion(plan),
+              style: TextStyle(fontSize: 16, color: Colors.white60),
             ),
             SizedBox(height: 8),
             Text(
-              obtenerDuracion(plan),
-              style: TextStyle(fontSize: 16, color: Colors.white60),
+              '\$${plan['costo'] ?? 'Desconocido'}',
+              style: TextStyle(fontSize: 16, color: Colors.greenAccent),
             ),
             SizedBox(height: 20),
             Center(

@@ -60,7 +60,7 @@ class _PagosScreenState extends State<PagosScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ConfirmacionScreen(token: widget.token, plan: planSeleccionado),
+          builder: (context) => ConfirmacionScreen(token: widget.token, plan: planSeleccionado, membresiaId: widget.membresiaId,),
         ),
       );
     } else {
