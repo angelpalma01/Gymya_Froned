@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:ui' as ui; // Importar 'dart:ui' con el alias 'ui'
-import 'package:gymya_users/app/Home/membresias.dart'; // Importar el archivo de la lista
+import 'package:gymya_users/app/Membresias/membresias.dart'; // Importar el archivo de la lista
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -35,9 +35,10 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(
+            builder: (context) => DashboardScreen(
               token: widget.token,
               user: widget.user,
+              membresiaId: widget.membresiaId,
             ),
           ),
         );
@@ -151,15 +152,6 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
         ),
         backgroundColor: Colors.black,
         iconTheme: IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout, color: Colors.white),
-            onPressed: () async {
-              await _storage.delete(key: 'token');
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
       ),
       body: _isLoading
           ? Center(

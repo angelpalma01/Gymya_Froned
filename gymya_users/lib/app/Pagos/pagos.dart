@@ -17,7 +17,6 @@ class PagosScreen extends StatefulWidget {
 class _PagosScreenState extends State<PagosScreen> {
   bool isLoading = true;
   List<dynamic> planes = [];
-  bool membresiaActiva = true; // Cambia según el estado de la membresía
   DateTime? _expiryDate; // Fecha de expiración de la membresía
 
   @override
@@ -41,7 +40,6 @@ class _PagosScreenState extends State<PagosScreen> {
         final data = jsonDecode(response.body);
         setState(() {
           _expiryDate = DateTime.parse(data['fecha_fin']); // Fecha de fin de la membresía
-          membresiaActiva = data['activa']; // Actualizamos el estado de la membresía
           isLoading = false;
         });
       } else {
@@ -79,6 +77,25 @@ class _PagosScreenState extends State<PagosScreen> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  // Función para formatear la fecha
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
+  // Función para determinar el estado de la membresía
+  String _getMembresiaStatus(DateTime expiryDate) {
+    final now = DateTime.now();
+    final difference = expiryDate.difference(now).inDays;
+
+    if (difference > 5) {
+      return 'Activa';
+    } else if (difference >= 0 && difference <= 5) {
+      return 'Próxima a expirar';
+    } else {
+      return 'Expirada';
     }
   }
 
@@ -206,9 +223,10 @@ class _PagosScreenState extends State<PagosScreen> {
                       Text('Membresía', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 8),
                       // Mostrar estado y fecha de expiración
-                      Text('Estado: ${membresiaActiva ? 'Activa' : 'Inactiva'}', style: TextStyle(color: membresiaActiva ? Colors.green : Colors.red)),
                       if (_expiryDate != null)
-                        Text('Válida hasta: ${_expiryDate!.toLocal()}'.split(' ')[0], style: TextStyle(color: Colors.white)),
+                        Text('Estado: ${_getMembresiaStatus(_expiryDate!)}', style: TextStyle(color: _getMembresiaStatus(_expiryDate!) == 'Activa' ? Colors.green : _getMembresiaStatus(_expiryDate!) == 'Próxima a expirar' ? Colors.orange : Colors.red)),
+                      if (_expiryDate != null)
+                        Text('Válida hasta: ${_formatDate(_expiryDate!)}', style: TextStyle(color: Colors.white)),
                       SizedBox(height: 16),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
