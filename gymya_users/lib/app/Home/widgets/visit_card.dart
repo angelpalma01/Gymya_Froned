@@ -18,7 +18,10 @@ class VisitCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      constraints: const BoxConstraints(
+        maxWidth: 325, // Limitar el ancho máximo a 365px
+      ),
+      padding: const EdgeInsets.all(16), // Centramos el contenido si la pantalla es grande
       decoration: BoxDecoration(
         color: Colors.grey[900],
         borderRadius: BorderRadius.circular(12),
@@ -26,56 +29,101 @@ class VisitCard extends StatelessWidget {
           BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2)),
         ],
       ),
-      child: Column(
+      child: Column( 
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'Última visita:',
             style: TextStyle(
-              color: Colors.white, fontSize: 16,
+              color: Colors.white,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
-              ),
+            ),
           ),
           const SizedBox(height: 4),
           Text(
-            '${formatDateTime(ultimaVisita)} en ${nombreGym}.',
+            '${formatDateTime(ultimaVisita)} en $nombreGym.',
             style: const TextStyle(
               color: Colors.white60,
-              fontSize: 14
+              fontSize: 14,
             ),
           ),
           const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 101, 9, 2),
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: onEnterPressed,
-                child: Text(
-                  'Entrada al gym',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 101, 9, 2),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                onPressed: onHistoryPressed,
-                child: const Text('Ver Historial', style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-        ],
-      ),
+          // Cambiar a Column si el ancho es pequeño, de lo contrario usar Row
+          LayoutBuilder(
+            builder: (context, constraints) {
+              if (constraints.maxWidth > 280) {
+                // Mostrar los botones en fila si el ancho es mayor a 280px
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 101, 9, 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: onEnterPressed,
+                      child: const Text(
+                        'Entrada al gym',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color.fromARGB(255, 101, 9, 2),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      onPressed: onHistoryPressed,
+                      child: const Text(
+                        'Ver Historial',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
+                );
+                } else {
+                  // Mostrar los botones uno debajo del otro si el ancho es menor a 280px
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 101, 9, 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: onEnterPressed,
+                        child: const Text(
+                          'Entrada al gym',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(height: 14), // Espacio entre los botones
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 101, 9, 2),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: onHistoryPressed,
+                        child: const Text(
+                          'Ver Historial',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ],
+        ),
     );
   }
 }
