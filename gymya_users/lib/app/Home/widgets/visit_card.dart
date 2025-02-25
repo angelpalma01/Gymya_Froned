@@ -52,10 +52,10 @@ class VisitCard extends StatelessWidget {
           // Cambiar a Column si el ancho es pequeño, de lo contrario usar Row
           LayoutBuilder(
             builder: (context, constraints) {
-              if (constraints.maxWidth > 280) {
+              if (constraints.maxWidth > 250) {
                 // Mostrar los botones en fila si el ancho es mayor a 280px
                 return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
@@ -66,10 +66,11 @@ class VisitCard extends StatelessWidget {
                       ),
                       onPressed: onEnterPressed,
                       child: const Text(
-                        'Entrada al gym',
+                        'Entrada',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
+                    const SizedBox(width: 30), // Espacio fijo de 20 píxeles
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 101, 9, 2),
@@ -79,7 +80,7 @@ class VisitCard extends StatelessWidget {
                       ),
                       onPressed: onHistoryPressed,
                       child: const Text(
-                        'Ver Historial',
+                        'Historial',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -99,7 +100,7 @@ class VisitCard extends StatelessWidget {
                         ),
                         onPressed: onEnterPressed,
                         child: const Text(
-                          'Entrada al gym',
+                          'Entrada',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -113,7 +114,7 @@ class VisitCard extends StatelessWidget {
                         ),
                         onPressed: onHistoryPressed,
                         child: const Text(
-                          'Ver Historial',
+                          'Historial',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),

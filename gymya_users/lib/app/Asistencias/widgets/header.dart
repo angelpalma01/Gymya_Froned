@@ -2,22 +2,21 @@
 import 'package:flutter/material.dart';
 
 class Header extends StatelessWidget {
-  final VoidCallback? onBackPressed;
-
-  const Header({this.onBackPressed, super.key});
+  const Header({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // Obtener el ancho de la pantalla
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       color: Colors.black,
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.08, // Ajusta el padding según el ancho
+        vertical: 12.0,
+      ),
       child: Row(
         children: [
-          if (onBackPressed != null)
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: onBackPressed,
-            ),
           Expanded(
             child: Center(
               child: ShaderMask(
@@ -30,9 +29,9 @@ class Header extends StatelessWidget {
                 },
                 child: Text(
                   'Historial de Asistencias',
-                  style: const TextStyle(
+                  style: TextStyle(
                     color: Colors.white,
-                    fontSize: 28,
+                    fontSize: screenWidth * 0.07, // Fuente ajustada al tamaño de pantalla
                     fontWeight: FontWeight.bold,
                   ),
                 ),

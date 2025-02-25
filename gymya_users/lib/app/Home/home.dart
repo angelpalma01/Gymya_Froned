@@ -102,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 SingleChildScrollView(
                   child: Column(
                     children: [
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 4),
                       Header(userName: widget.user['nombre_completo']),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 6.0),
@@ -122,7 +122,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           style: TextStyle(color: Colors.white, fontSize: 16),
                                         ),
                                         const Text(
-                                          'Manten tu membresía activa para no perder tus beneficios',
+                                          'Manten tu membresía activa.',
                                           style: TextStyle(color: Colors.white60, fontSize: 14),
                                         ),
                                         const SizedBox(height: 12),
@@ -145,7 +145,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           style: TextStyle(color: Colors.white, fontSize: 16),
                                         ),
                                         const Text(
-                                          'Consulta tu código QR y tus asistencias',
+                                          'Consulta tu código QR e historial de asistencias.',
                                           style: TextStyle(color: Colors.white60, fontSize: 14),
                                         ),
                                         const SizedBox(height: 12),
@@ -181,7 +181,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     style: TextStyle(color: Colors.white, fontSize: 16),
                                   ),
                                   const Text(
-                                    'Manten tu membresía activa para no perder tus beneficios',
+                                    'Manten tu membresía activa.',
                                     style: TextStyle(color: Colors.white60, fontSize: 14),
                                   ),
                                   const SizedBox(height: 12),
@@ -196,7 +196,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     style: TextStyle(color: Colors.white, fontSize: 16),
                                   ),
                                   const Text(
-                                    'Consulta tu código QR y tus asistencias',
+                                    'Consulta tu código QR e historial de asistencias.',
                                     style: TextStyle(color: Colors.white60, fontSize: 14),
                                   ),
                                   const SizedBox(height: 12),

@@ -33,7 +33,7 @@ class Header extends StatelessWidget {
                 'Hola, $userName',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: screenWidth * 0.06, // Fuente ajustada al tamaño de pantalla
+                  fontSize: screenWidth * 0.065, // Fuente ajustada al tamaño de pantalla
                   fontWeight: FontWeight.bold,
                 ),
                 overflow: TextOverflow.ellipsis, // Maneja textos largos en pantallas pequeñas

@@ -133,9 +133,8 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          Header(
-            onBackPressed: () => Navigator.pop(context), // Flecha para volver
-          ),
+          const SizedBox(height: 40),
+          Header(),
           Expanded(
             child: _isLoading
                 ? Center(

@@ -60,6 +60,7 @@ class _MembresiasListState extends State<MembresiasList> {
       backgroundColor: Colors.black,
       body: Column(
         children: [
+          const SizedBox(height: 50),
           const Header(), // Usa el nuevo header sin parámetros
           Expanded(
             child: isLoading

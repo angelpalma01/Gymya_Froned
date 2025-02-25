@@ -5,23 +5,29 @@ class Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Obtener el ancho de la pantalla
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Container(
       color: Colors.black,
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.07, // Ajusta el padding según el ancho 
+        vertical: 1.0
+      ),
       child: Center(
         child: ShaderMask(
           shaderCallback: (Rect bounds) {
             return LinearGradient(
-              colors: [Colors.purple, Colors.red],
+              colors: [const Color.fromRGBO(156, 39, 176, 1), Colors.red],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ).createShader(bounds);
           },
-          child: const Text(
+          child: Text(
             'Membresías disponibles', // Texto actualizado
             style: TextStyle(
               color: Colors.white,
-              fontSize: 28,
+              fontSize: screenWidth * 0.07,
               fontWeight: FontWeight.bold,
             ),
           ),
