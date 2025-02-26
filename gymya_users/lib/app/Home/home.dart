@@ -55,23 +55,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadData() async {
-    try {
-      final membresiaData = await _datosMembresia.fetchMembresiaData();
-      final ultimaEntradaData = await _ultimaEntrada.fetchUltimaEntrada();
-
-      setState(() {
-        _membresiaData = membresiaData;
-        _ultimaEntradaData = ultimaEntradaData['data'];
-        _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
-        isLoading = false;
-      });
-    } catch (error) {
-      print('Error: $error');
-      setState(() {
-        isLoading = false;
-      });
-    }
+  try {
+    // Cargar datos de membresía
+    final membresiaData = await _datosMembresia.fetchMembresiaData();
+    setState(() {
+      _membresiaData = membresiaData;
+      _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
+    });
+  } catch (error) {
+    print('Error al obtener datos de membresía: $error');
+    
+    // Asignar valores predeterminados para membresía en caso de error
+    setState(() {
+      _membresiaData = {'nombrePlan': 'Plan no disponible', 'fecha_fin': DateTime.now().toString()};
+      _expiryDate = DateTime.now();
+    });
   }
+
+  try {
+    // Cargar datos de la última entrada
+    final ultimaEntradaData = await _ultimaEntrada.fetchUltimaEntrada();
+    setState(() {
+      _ultimaEntradaData = ultimaEntradaData['data'];
+    });
+  } catch (error) {
+    print('Error al obtener la última entrada: $error');
+
+    // Asignar valores predeterminados para última entrada en caso de error
+    setState(() {
+      _ultimaEntradaData = {
+        'fecha_hora': 'Sin accesos', // O puedes poner un valor predeterminado como 'Sin visitas'
+        'gimnasioNombre': 'Gimnasio no disponible'
+      };
+    });
+  }
+
+  // Finalmente, deshabilitar el indicador de carga
+  setState(() {
+    isLoading = false;
+  });
+}
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -151,8 +175,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         const SizedBox(height: 12),
                                         if (_ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null)
                                           VisitCard(
-                                            ultimaVisita: _ultimaEntradaData!['fecha_hora'],
-                                            nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio',
+                                            ultimaVisita: _ultimaEntradaData!['fecha_hora'] ?? 'Sin visitas',
+                                            nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio no disponible',
                                             onEnterPressed: _toggleQRCode,
                                             onHistoryPressed: () {
                                               Navigator.push(
@@ -202,8 +226,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   const SizedBox(height: 12),
                                   if (_ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null)
                                     VisitCard(
-                                      ultimaVisita: _ultimaEntradaData!['fecha_hora'], 
-                                      nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio',
+                                      ultimaVisita: _ultimaEntradaData!['fecha_hora'] ?? 'Sin visitas', 
+                                      nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio no disponible',
                                       onEnterPressed: _toggleQRCode,
                                       onHistoryPressed: () {
                                         Navigator.push(
