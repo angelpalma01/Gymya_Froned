@@ -20,8 +20,7 @@ class AsistenciaCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      elevation: 4,
+      margin: EdgeInsets.symmetric(vertical: 4),
       color: Colors.grey[900],
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),

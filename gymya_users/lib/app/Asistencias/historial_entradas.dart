@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gymya_users/app/Funciones/listaAsistencias.dart';
-import 'package:gymya_users/app/Home/home.dart';
-import 'package:gymya_users/app/Entrenadores/entrenadores.dart';
-import 'package:gymya_users/app/horarios_gym/horariosgym.dart';
-import 'package:gymya_users/app/Pagos/pagos.dart';
 import 'package:gymya_users/app/Asistencias/widgets/header.dart'; // Importa el nuevo header
 import 'package:gymya_users/app/Asistencias/widgets/asistencias_card.dart'; // Card de asistencias
 
@@ -26,7 +22,6 @@ class HistorialEntradasScreen extends StatefulWidget {
 class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
   List<dynamic> _asistencias = [];
   bool _isLoading = true;
-  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -72,68 +67,13 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
     );
   }
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DashboardScreen(
-              token: widget.token,
-              user: widget.user,
-              membresiaId: widget.membresiaId,
-            ),
-          ),
-        );
-        break;
-      case 1:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => EntrenadoresScreen(
-              token: widget.token,
-              user: widget.user,
-            ),
-          ),
-        );
-        break;
-      case 2:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HorariosScreen(
-              token: widget.token,
-              user: widget.user,
-            ),
-          ),
-        );
-        break;
-      case 3:
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PagosScreen(
-              token: widget.token,
-              user: widget.user,
-              membresiaId: widget.membresiaId,
-            ),
-          ),
-        );
-        break;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          const SizedBox(height: 40),
+          const SizedBox(height: 30),
           Header(),
           Expanded(
             child: _isLoading
@@ -150,7 +90,7 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                         ),
                       )
                     : ListView.builder(
-                        padding: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(14),
                         itemCount: _asistencias.length,
                         itemBuilder: (context, index) {
                           final asistencia = _asistencias[index];
@@ -171,21 +111,6 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                         },
                       ),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.purple,
-        unselectedItemColor: Colors.grey,
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        showUnselectedLabels: true,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Inicio'),
-          BottomNavigationBarItem(icon: Icon(Icons.fitness_center), label: 'Couch'),
-          BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'Horarios'),
-          BottomNavigationBarItem(icon: Icon(Icons.payment), label: 'Pagos'),
         ],
       ),
     );

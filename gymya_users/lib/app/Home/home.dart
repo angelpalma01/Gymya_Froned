@@ -127,7 +127,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Column(
                     children: [
                       const SizedBox(height: 4),
-                      Header(userName: widget.user['nombre_completo']),
+                      Header(user: widget.user, token: widget.token),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 6.0),
                         child: LayoutBuilder(

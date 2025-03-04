@@ -12,11 +12,18 @@ class Header extends StatelessWidget {
     return Container(
       color: Colors.black,
       padding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.08, // Ajusta el padding según el ancho
-        vertical: 12.0,
+        horizontal: screenWidth * 0.05, // Ajusta el padding según el ancho
+        vertical: 8.0,
       ),
       child: Row(
         children: [
+          // Botón para regresar a la página anterior
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
           Expanded(
             child: Center(
               child: ShaderMask(
@@ -31,7 +38,7 @@ class Header extends StatelessWidget {
                   'Historial de Asistencias',
                   style: TextStyle(
                     color: Colors.white,
-                    fontSize: screenWidth * 0.07, // Fuente ajustada al tamaño de pantalla
+                    fontSize: screenWidth * 0.065, // Fuente ajustada al tamaño de pantalla
                     fontWeight: FontWeight.bold,
                   ),
                 ),
