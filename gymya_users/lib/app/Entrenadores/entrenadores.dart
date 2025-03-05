@@ -11,32 +11,39 @@ class EntrenadoresScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black, // Fondo de la pantalla en negro
       appBar: AppBar(
-        title: Text('Entrenadores', style: TextStyle(color: Colors.white)),
+        title: ShaderMask(
+          shaderCallback: (Rect bounds) {
+            return LinearGradient(
+              colors: [Colors.purple, Colors.red],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ).createShader(bounds);
+          },
+          child: Text(
+            'Entrenadores',
+            style: TextStyle(
+              fontSize: 24, // Texto más grande
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+        ),
         backgroundColor: Colors.black, // Fondo del AppBar en negro
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10.0), // Padding a los lados
           child: Column(
             children: [
-              // Encabezado con nombre de sección y descripción
-              ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return LinearGradient(
-                    colors: [Colors.purple, Colors.red],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds);
-                },
+              SizedBox(height: 16), // Espacio superior
+              // Texto de consulta
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5.0), // Padding sutil a los lados
                 child: Text(
-                  'Entrenadores',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                  'Consulta la información de los entrenadores disponibles.',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                  textAlign: TextAlign.center, // Centrar el texto
                 ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Consulta la información de los entrenadores disponibles.',
-                style: TextStyle(color: Colors.grey, fontSize: 14),
               ),
               SizedBox(height: 16),
 
@@ -48,7 +55,14 @@ class EntrenadoresScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Entrenadores Disponibles', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text(
+                        'Entrenadores Disponibles',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                       SizedBox(height: 8),
                       // Aquí puedes agregar la lista de entrenadores
                     ],

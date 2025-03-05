@@ -36,6 +36,20 @@ class _PerfilScreenState extends State<PerfilScreen> {
 
     return Scaffold(
       backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent, // Fondo transparente
+        elevation: 0, // Sin sombra
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white, // Color de la flecha
+          ),
+          onPressed: () {
+            // Navegar de regreso a la pantalla home.dart
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(
@@ -47,7 +61,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
                   // Imagen de perfil con borde degradado
                   Container(
                     padding: const EdgeInsets.all(4), // Borde de 4px
@@ -58,6 +72,14 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(100), // Borde redondeado
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.5),
+                          blurRadius: 10,
+                          spreadRadius: 2,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: CircleAvatar(
                       radius: 80,
@@ -75,11 +97,14 @@ class _PerfilScreenState extends State<PerfilScreen> {
                         end: Alignment.bottomRight,
                       ).createShader(bounds);
                     },
+                    blendMode: BlendMode.srcATop, // Asegura que el gradiente se aplique correctamente
                     child: Text(
-                      widget.user['nombre_completo'],
+                      'Sergio Terán', // Nombre fijo
                       style: TextStyle(
                         fontSize: screenWidth * 0.08, // Tamaño de fuente dinámico
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'Roboto', // Cambia la tipografía si lo deseas
+                        color: Colors.white, // Color base para el texto
                       ),
                     ),
                   ),
@@ -118,7 +143,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   }) {
     return Card(
       color: Colors.grey[900],
-      elevation: 0,
+      elevation: 4,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
       ),
@@ -149,6 +174,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       color: Colors.white60,
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
+                      fontFamily: 'Roboto', // Cambia la tipografía si lo deseas
                     ),
                   ),
                   const SizedBox(height: 4),
@@ -159,6 +185,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                           ? Colors.grey
                           : Colors.white70,
                       fontSize: 16,
+                      fontFamily: 'Roboto', // Cambia la tipografía si lo deseas
                     ),
                   ),
                 ],
