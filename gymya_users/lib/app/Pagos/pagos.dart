@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gymya_users/app/Pagos/widgets/header.dart'; // Header
 import 'package:gymya_users/app/Pagos/widgets/membresia_card.dart'; // carta de membresía
-import 'package:gymya_users/app/Pagos/confirmacion.dart'; // carta de membresía
+import 'package:gymya_users/app/Pagos/confirmacion.dart'; // pantalla de confirmación
 import 'package:gymya_users/app/Pagos/widgets/planes_modal.dart'; // modal de planes
 import 'package:gymya_users/app/Funciones/datosMembresia.dart'; // Importa el servicio de planes
 import 'package:gymya_users/app/Funciones/listaPlanes.dart'; // Importa el servicio de membresía
@@ -52,7 +52,7 @@ class _PagosScreenState extends State<PagosScreen> {
     }
   }
 
-  // Función (aún no definida) que manejará el ID del plan seleccionado
+  // Función que maneja el ID del plan seleccionado
   void _seleccionarPlan(String planId) {
     final planSeleccionado = planes.firstWhere((plan) => plan['_id'] == planId, orElse: () => null);
 
@@ -93,7 +93,7 @@ class _PagosScreenState extends State<PagosScreen> {
           Expanded(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Padding ajustado
                 child: Column(
                   children: [
                     Text(
@@ -118,15 +118,54 @@ class _PagosScreenState extends State<PagosScreen> {
                             ),
                           ],
                         ),
-                        child: MembresiaCard(
-                          nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
-                          fechaExpiracion: _expiryDate!,
-                          onRenovarPressed: () {
-                            _showPlanesModal(context);
-                          },
-                          onCancelarPressed: () {
-                            // Lógica para cancelar membresía
-                          },
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Plan de membresía:',
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
+                              style: TextStyle(fontSize: 16, color: Colors.white),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Estado: Activa',
+                              style: TextStyle(fontSize: 16, color: Colors.green),
+                            ),
+                            SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      _showPlanesModal(context);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.purple, // Color del botón
+                                      padding: EdgeInsets.symmetric(vertical: 12), // Padding interno
+                                    ),
+                                    child: Text('Renovar Membresía', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ),
+                                SizedBox(width: 8), // Espacio entre botones
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      // Lógica para cancelar membresía
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red, // Color del botón
+                                      padding: EdgeInsets.symmetric(vertical: 12), // Padding interno
+                                    ),
+                                    child: Text('Cancelar', style: TextStyle(color: Colors.white)),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
                       ),
                   ],
