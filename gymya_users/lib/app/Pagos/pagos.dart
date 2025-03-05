@@ -70,18 +70,18 @@ class _PagosScreenState extends State<PagosScreen> {
 
   // Mostrar modal de membresías con tarjetas centradas y scroll
   void _showPlanesModal(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Colors.transparent, // Fondo transparente para aplicar blur
-    isScrollControlled: true, // Permite que el modal ocupe más espacio
-    builder: (BuildContext context) {
-      return PlanesModal(
-        planes: planes,
-        onPlanSelected: _seleccionarPlan,
-      );
-    },
-  );
-}
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent, // Fondo transparente para aplicar blur
+      isScrollControlled: true, // Permite que el modal ocupe más espacio
+      builder: (BuildContext context) {
+        return PlanesModal(
+          planes: planes,
+          onPlanSelected: _seleccionarPlan,
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,27 +90,48 @@ class _PagosScreenState extends State<PagosScreen> {
       body: Column(
         children: [
           const Header(),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                Text(
-                  'Consulta tus pagos y renueva tu membresía fácilmente.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    Text(
+                      'Consulta tus pagos y renueva tu membresía fácilmente.',
+                      style: TextStyle(color: Colors.grey, fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 24),
+                    if (_membresiaData != null && _expiryDate != null)
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.3),
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: MembresiaCard(
+                          nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
+                          fechaExpiracion: _expiryDate!,
+                          onRenovarPressed: () {
+                            _showPlanesModal(context);
+                          },
+                          onCancelarPressed: () {
+                            // Lógica para cancelar membresía
+                          },
+                        ),
+                      ),
+                  ],
                 ),
-                SizedBox(height: 16),
-                if (_membresiaData != null && _expiryDate != null)
-                  MembresiaCard(
-                    nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
-                    fechaExpiracion: _expiryDate!,
-                    onRenovarPressed: () {
-                      _showPlanesModal(context);
-                    },
-                    onCancelarPressed: () {
-                      // Lógica para cancelar membresía
-                    },
-                  ),
-              ],
+              ),
             ),
           ),
         ],

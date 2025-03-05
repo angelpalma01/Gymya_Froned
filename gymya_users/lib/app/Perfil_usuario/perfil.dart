@@ -37,20 +37,36 @@ class _PerfilScreenState extends State<PerfilScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.purple),
+              ),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-                  // Imagen de perfil
-                  CircleAvatar(
-                    radius: 80,
-                    backgroundImage: NetworkImage(widget.user['imagen']),
+                  // Imagen de perfil con borde degradado
+                  Container(
+                    padding: const EdgeInsets.all(4), // Borde de 4px
+                    decoration: BoxDecoration(
+                      gradient: const LinearGradient(
+                        colors: [Colors.purple, Colors.red],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.circular(100), // Borde redondeado
+                    ),
+                    child: CircleAvatar(
+                      radius: 80,
+                      backgroundColor: Colors.transparent,
+                      backgroundImage: NetworkImage(widget.user['imagen']),
+                    ),
                   ),
                   const SizedBox(height: 20),
-                  // Nombre completo con ShaderMask
+                  // Nombre con gradiente
                   ShaderMask(
                     shaderCallback: (Rect bounds) {
                       return const LinearGradient(
@@ -62,119 +78,95 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     child: Text(
                       widget.user['nombre_completo'],
                       style: TextStyle(
-                        color: Colors.white60,
-                        fontSize: screenWidth * 0.1, // Tamaño de fuente dinámico
+                        fontSize: screenWidth * 0.08, // Tamaño de fuente dinámico
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
                   const SizedBox(height: 30),
-                  // Detalles adicionales
-                  Card(
-                    color: Colors.grey[900],
-                    elevation: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          // ID del usuario
-                          ListTile(
-                            leading: ShaderMask(
-                              shaderCallback: (Rect bounds) {
-                                return const LinearGradient(
-                                  colors: [Colors.purple, Colors.red],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds);
-                              },
-                              child: const Icon(
-                                Icons.person_outline,
-                                color: Colors.white, // Color base para el ícono
-                              ),
-                            ),
-                            title: const Text(
-                              'ID de Usuario',
-                              style: TextStyle(
-                                color: Colors.white60,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              widget.user['_id'],
-                              style: const TextStyle(
-                                color: Colors.white70, // Texto más claro
-                              ),
-                            ),
-                          ),
-                          const Divider(),
-                          // Correo electrónico
-                          ListTile(
-                            leading: ShaderMask(
-                              shaderCallback: (Rect bounds) {
-                                return const LinearGradient(
-                                  colors: [Colors.purple, Colors.red],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds);
-                              },
-                              child: const Icon(
-                                Icons.email,
-                                color: Colors.white, // Color base para el ícono
-                              ),
-                            ),
-                            title: const Text(
-                              'Correo',
-                              style: TextStyle(
-                                color: Colors.white60,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              widget.user['email'],
-                              style: const TextStyle(
-                                color: Colors.white70, // Texto más claro
-                              ),
-                            ),
-                          ),
-                          const Divider(),
-                          // Teléfono (si está disponible)
-                          ListTile(
-                            leading: ShaderMask(
-                              shaderCallback: (Rect bounds) {
-                                return const LinearGradient(
-                                  colors: [Colors.purple, Colors.red],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ).createShader(bounds);
-                              },
-                              child: const Icon(
-                                Icons.phone,
-                                color: Colors.white, // Color base para el ícono
-                              ),
-                            ),
-                            title: const Text(
-                              'Teléfono',
-                              style: TextStyle(
-                                color: Colors.white60,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              widget.user['telefono'] ?? 'No proporcionado',
-                              style: TextStyle(
-                                color: widget.user['telefono'] == null
-                                    ? Colors.grey
-                                    : Colors.white70, // Texto más claro
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                  // Detalles adicionales en tarjetas minimalistas
+                  _buildDetailCard(
+                    icon: Icons.person_outline,
+                    title: 'ID de Usuario',
+                    subtitle: widget.user['_id'],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDetailCard(
+                    icon: Icons.email,
+                    title: 'Correo',
+                    subtitle: widget.user['email'],
+                  ),
+                  const SizedBox(height: 16),
+                  _buildDetailCard(
+                    icon: Icons.phone,
+                    title: 'Teléfono',
+                    subtitle: widget.user['telefono'] ?? 'No proporcionado',
+                    isPhone: true,
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  // Widget para construir tarjetas de detalles minimalistas
+  Widget _buildDetailCard({
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    bool isPhone = false,
+  }) {
+    return Card(
+      color: Colors.grey[900],
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // Ícono con gradiente
+            ShaderMask(
+              shaderCallback: (Rect bounds) {
+                return const LinearGradient(
+                  colors: [Colors.purple, Colors.red],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ).createShader(bounds);
+              },
+              child: Icon(icon, size: 30, color: Colors.white),
+            ),
+            const SizedBox(width: 16),
+            // Texto
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      color: Colors.white60,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: TextStyle(
+                      color: isPhone && subtitle == 'No proporcionado'
+                          ? Colors.grey
+                          : Colors.white70,
+                      fontSize: 16,
                     ),
                   ),
                 ],
               ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }
