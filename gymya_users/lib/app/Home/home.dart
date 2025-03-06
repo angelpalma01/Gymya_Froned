@@ -49,7 +49,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     _screens.addAll([
       EntrenadoresScreen(token: widget.token, user: widget.user),
-      HorariosScreen(token: widget.token, user: widget.user),
+      HorariosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
       PagosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
     ]);
   }

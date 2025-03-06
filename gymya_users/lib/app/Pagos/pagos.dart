@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gymya_users/app/Pagos/widgets/header.dart'; // Header
-import 'package:gymya_users/app/Pagos/widgets/membresia_card.dart'; // carta de membresía
 import 'package:gymya_users/app/Pagos/confirmacion.dart'; // pantalla de confirmación
 import 'package:gymya_users/app/Pagos/widgets/planes_modal.dart'; // modal de planes
 import 'package:gymya_users/app/Funciones/datosMembresia.dart'; // Importa el servicio de planes
