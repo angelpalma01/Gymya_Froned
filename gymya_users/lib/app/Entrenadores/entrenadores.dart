@@ -86,6 +86,7 @@ class _EntrenadoresScreenState extends State<EntrenadoresScreen> {
                               'nombre': entrenador['nombre_completo'] ?? 'Nombre no disponible',
                               'imagenUrl': entrenador['imagen'] ?? 'https://via.placeholder.com/150', // Imagen por defecto
                               'especialidad': entrenador['especialidad'] ?? 'Especialidad no disponible',
+                              'horario': entrenador['horario'] ?? 'Horario no disponible',
                             },
                           );
                         },

@@ -66,7 +66,7 @@ class VisitCard extends StatelessWidget {
                       ),
                       onPressed: onEnterPressed,
                       child: const Text(
-                        'Entrada',
+                        'Código QR',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

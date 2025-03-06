@@ -48,11 +48,14 @@ class _EntrenadoresCardState extends State<EntrenadoresCard> {
               SizedBox(height: 16),
               // Mostrar otros datos del entrenador debajo
               Text(
-                'Experiencia: ${entrenador['experiencia']} años',
-                style: TextStyle(fontSize: 16),
+                'Especialidad: ${entrenador['especialidad']}',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
               Text(
-                'Especialidad: ${entrenador['especialidad']}',
+                'Disponible de: ${entrenador['horario']}',
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey,
