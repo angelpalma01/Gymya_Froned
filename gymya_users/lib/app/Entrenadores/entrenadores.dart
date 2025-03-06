@@ -1,78 +1,102 @@
 import 'package:flutter/material.dart';
+import 'package:gymya_users/app/Entrenadores/widgets/entrenadores_card.dart';
+import 'package:gymya_users/app/funciones/datosMembresia.dart';
+import 'package:gymya_users/app/funciones/listaEntrenadores.dart';
+import 'package:gymya_users/app/Entrenadores/widgets/header.dart';
 
-class EntrenadoresScreen extends StatelessWidget {
+class EntrenadoresScreen extends StatefulWidget {
   final String token;
   final Map<String, dynamic> user;
+  final String membresiaId;
 
-  const EntrenadoresScreen({super.key, required this.token, required this.user});
+  const EntrenadoresScreen({super.key, required this.token, required this.user, required this.membresiaId});
 
+  @override
+  _EntrenadoresScreenState createState() => _EntrenadoresScreenState();
+}
+
+class _EntrenadoresScreenState extends State<EntrenadoresScreen> {
+  bool isLoading = true;
+  late datosMembresia _datosMembresia;
+  List<dynamic> entrenadoresList = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _datosMembresia = datosMembresia(token: widget.token, membresiaId: widget.membresiaId);
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    try {
+      final membresiaData = await _datosMembresia.fetchMembresiaData();
+      final List<dynamic> gymIds = membresiaData['gym_id'];
+
+      // Iterar sobre cada gymId y obtener entrenadores
+      for(String gymId in gymIds) {
+        final EntrenadoresService service = 
+          EntrenadoresService(token: widget.token, gymId: gymId);
+        final List<dynamic> entrenadores = await service.fetchEntrenadores();
+
+        setState(() {
+          entrenadoresList.addAll(entrenadores);
+        });
+      }
+
+      setState(() {
+        isLoading = false;
+      });
+    } catch (error) {
+      print('Error: $error');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black, // Fondo de la pantalla en negro
-      appBar: AppBar(
-        title: ShaderMask(
-          shaderCallback: (Rect bounds) {
-            return LinearGradient(
-              colors: [Colors.purple, Colors.red],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ).createShader(bounds);
-          },
-          child: Text(
-            'Entrenadores',
-            style: TextStyle(
-              fontSize: 24, // Texto más grande
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-        ),
-        backgroundColor: Colors.black, // Fondo del AppBar en negro
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0), // Padding a los lados
-          child: Column(
-            children: [
-              SizedBox(height: 16), // Espacio superior
-              // Texto de consulta
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5.0), // Padding sutil a los lados
-                child: Text(
-                  'Consulta la información de los entrenadores disponibles.',
-                  style: TextStyle(color: Colors.grey, fontSize: 14),
-                  textAlign: TextAlign.center, // Centrar el texto
-                ),
-              ),
-              SizedBox(height: 16),
-
-              // Card de Entrenadores
-              Card(
-                color: Colors.grey[900], // Color de la tarjeta en gris oscuro
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+      body: Column(
+        children: [
+          const Header(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Padding a los lados
+                child: Column(
+                  children: [
                       Text(
-                        'Entrenadores Disponibles',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                        'Consulta la información de los entrenadores disponibles.',
+                        style: TextStyle(color: Colors.grey, fontSize: 14),
+                        textAlign: TextAlign.center, // Centrar el texto
                       ),
-                      SizedBox(height: 8),
-                      // Aquí puedes agregar la lista de entrenadores
-                    ],
-                  ),
+                    SizedBox(height: 24),
+                    if (isLoading)
+                      const CircularProgressIndicator(), // Indicador de carga
+                    if(!isLoading && entrenadoresList.isNotEmpty)
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: entrenadoresList.length,
+                        itemBuilder:(context, index) {
+                          final entrenador = entrenadoresList[index];
+                          return EntrenadoresCard(
+                            entrenador: {
+                              'nombre': entrenador['nombre_completo'] ?? 'Nombre no disponible',
+                              'imagenUrl': entrenador['imagen'] ?? 'https://via.placeholder.com/150', // Imagen por defecto
+                              'especialidad': entrenador['especialidad'] ?? 'Especialidad no disponible',
+                            },
+                          );
+                        },
+                      )
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ) 
+          )
+        ],
+      )
     );
   }
 }

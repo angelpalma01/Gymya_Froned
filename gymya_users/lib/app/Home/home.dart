@@ -48,30 +48,54 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadData();
 
     _screens.addAll([
-      EntrenadoresScreen(token: widget.token, user: widget.user),
+      EntrenadoresScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
       HorariosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
       PagosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
     ]);
   }
 
   Future<void> _loadData() async {
-    try {
-      final membresiaData = await _datosMembresia.fetchMembresiaData();
-      final ultimaEntradaData = await _ultimaEntrada.fetchUltimaEntrada();
-
-      setState(() {
-        _membresiaData = membresiaData;
-        _ultimaEntradaData = ultimaEntradaData['data'];
-        _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
-        isLoading = false;
-      });
+  try {
+    // Cargar datos de membresía
+    final membresiaData = await _datosMembresia.fetchMembresiaData();
+    setState(() {
+      _membresiaData = membresiaData;
+      _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
+    });
     } catch (error) {
-      print('Error: $error');
+      print('Error al obtener datos de membresía: $error');
+      
+      // Asignar valores predeterminados para membresía en caso de error
       setState(() {
-        isLoading = false;
+        _membresiaData = {'nombrePlan': 'Plan no disponible', 'fecha_fin': DateTime.now().toString()};
+        _expiryDate = DateTime.now();
       });
     }
+
+    try {
+      // Cargar datos de la última entrada
+      final ultimaEntradaData = await _ultimaEntrada.fetchUltimaEntrada();
+      setState(() {
+        _ultimaEntradaData = ultimaEntradaData['data'];
+      });
+    } catch (error) {
+      print('Error al obtener la última entrada: $error');
+
+      // Asignar valores predeterminados para última entrada en caso de error
+      setState(() {
+        _ultimaEntradaData = {
+          'fecha_hora': null, // O puedes poner un valor predeterminado como 'Sin visitas'
+          'gimnasioNombre': 'Gimnasio no disponible'
+        };
+      });
+    }
+
+    // Finalmente, deshabilitar el indicador de carga
+    setState(() {
+      isLoading = false;
+    });
   }
+
 
   void _onItemTapped(int index) {
     setState(() {
@@ -105,125 +129,131 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       const SizedBox(height: 4),
                       Header(user: widget.user, token: widget.token),
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 6.0),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            if(constraints.maxWidth > 600){
-                              return Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Estado de membresía:',
-                                          style: TextStyle(color: Colors.white, fontSize: 16),
-                                        ),
-                                        const Text(
-                                          'Manten tu membresía activa.',
-                                          style: TextStyle(color: Colors.white60, fontSize: 14),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        if (_membresiaData != null && _expiryDate != null)
-                                          MembershipCard(
-                                            nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
-                                            expiryDate: _expiryDate!,
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Asistencias:',
-                                          style: TextStyle(color: Colors.white, fontSize: 16),
-                                        ),
-                                        const Text(
-                                          'Consulta tu código QR e historial de asistencias.',
-                                          style: TextStyle(color: Colors.white60, fontSize: 14),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        if (_ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null)
-                                          VisitCard(
-                                            ultimaVisita: _ultimaEntradaData!['fecha_hora'],
-                                            nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio',
-                                            onEnterPressed: _toggleQRCode,
-                                            onHistoryPressed: () {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => HistorialEntradasScreen(
-                                                    token: widget.token,
-                                                    user: widget.user,
-                                                    membresiaId: widget.membresiaId,
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              );
-                            }else{
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Estado de membresía:',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
-                                  ),
-                                  const Text(
-                                    'Manten tu membresía activa.',
-                                    style: TextStyle(color: Colors.white60, fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  if (_membresiaData != null && _expiryDate != null)
-                                    MembershipCard(
-                                      nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
-                                      expiryDate: _expiryDate!,
-                                    ),
-                                  const SizedBox(height: 8),
-                                  const Text(
-                                    'Asistencias:',
-                                    style: TextStyle(color: Colors.white, fontSize: 16),
-                                  ),
-                                  const Text(
-                                    'Consulta tu código QR e historial de asistencias.',
-                                    style: TextStyle(color: Colors.white60, fontSize: 14),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  if (_ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null)
-                                    VisitCard(
-                                      ultimaVisita: _ultimaEntradaData!['fecha_hora'], 
-                                      nombreGym: _ultimaEntradaData!['gimnasioNombre'] ?? 'Gimnasio',
-                                      onEnterPressed: _toggleQRCode,
-                                      onHistoryPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => HistorialEntradasScreen(
-                                              token: widget.token,
-                                              user: widget.user,
-                                              membresiaId: widget.membresiaId,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                ],
-                              );
-                            }
-                          }
+  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 6.0),
+  child: LayoutBuilder(
+    builder: (context, constraints) {
+      if (constraints.maxWidth > 600) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Estado de membresía:',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  const Text(
+                    'Manten tu membresía activa.',
+                    style: TextStyle(color: Colors.white60, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_membresiaData != null && _expiryDate != null)
+                    MembershipCard(
+                      nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
+                      expiryDate: _expiryDate!,
+                    ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              flex: 1,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Asistencias:',
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                  const Text(
+                    'Consulta tu código QR e historial de asistencias.',
+                    style: TextStyle(color: Colors.white60, fontSize: 14),
+                  ),
+                  const SizedBox(height: 12),
+                  VisitCard(
+                    ultimaVisita: _ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null
+                        ? _ultimaEntradaData!['fecha_hora']
+                        : 'Aún no hay visitas',
+                    nombreGym: _ultimaEntradaData != null && _ultimaEntradaData!['gimnasioNombre'] != null
+                        ? _ultimaEntradaData!['gimnasioNombre']
+                        : 'Gimnasio no disponible',
+                    onEnterPressed: _toggleQRCode,
+                    onHistoryPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HistorialEntradasScreen(
+                            token: widget.token,
+                            user: widget.user,
+                            membresiaId: widget.membresiaId,
+                          ),
                         ),
-                      ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      } else {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Estado de membresía:',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            const Text(
+              'Manten tu membresía activa.',
+              style: TextStyle(color: Colors.white60, fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            if (_membresiaData != null && _expiryDate != null)
+              MembershipCard(
+                nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
+                expiryDate: _expiryDate!,
+              ),
+            const SizedBox(height: 8),
+            const Text(
+              'Asistencias:',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            const Text(
+              'Consulta tu código QR e historial de asistencias.',
+              style: TextStyle(color: Colors.white60, fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            VisitCard(
+              ultimaVisita: _ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null
+                  ? _ultimaEntradaData!['fecha_hora']
+                  : 'Aún no hay visitas',
+              nombreGym: _ultimaEntradaData != null && _ultimaEntradaData!['gimnasioNombre'] != null
+                  ? _ultimaEntradaData!['gimnasioNombre']
+                  : 'Gimnasio no disponible',
+              onEnterPressed: _toggleQRCode,
+              onHistoryPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HistorialEntradasScreen(
+                      token: widget.token,
+                      user: widget.user,
+                      membresiaId: widget.membresiaId,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        );
+      }
+    },
+  ),
+),
                       CustomCalendar(
                         calendarFormat: _calendarFormat,
                         focusedDay: _focusedDay,

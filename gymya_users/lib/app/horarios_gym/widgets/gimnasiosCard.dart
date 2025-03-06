@@ -36,7 +36,6 @@ class _GimnasioscardState extends State<Gimnasioscard> {
                 ),
               ),
               const SizedBox(height: 16), // Espaciado entre la imagen y los datos
-
               // Nombre del gimnasio
               Text(
                 gimnasio['nombre'] ?? 'Nombre no disponible',
