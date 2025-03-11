@@ -1,22 +1,62 @@
 import 'package:flutter/material.dart';
-import 'package:gymya_users/app/Pagos/widgets/header_confirmacion.dart'; // Importamos el header personalizado
-import 'package:gymya_users/app/Pagos/widgets/plan_card.dart'; // Importamos la nueva tarjeta de detalles
-import 'package:gymya_users/app/Funciones/aplazarMembresia.dart'; // Importamos la nueva tarjeta de detalles
+import 'package:gymya_users/app/Pagos/widgets/header_confirmacion.dart';
+import 'package:gymya_users/app/Pagos/widgets/plan_card.dart';
+import 'package:gymya_users/app/Funciones/aplazarMembresia.dart';
+import 'package:gymya_users/app/Funciones/planIndividual.dart';
 
-class ConfirmacionScreen extends StatelessWidget {
+class ConfirmacionScreen extends StatefulWidget {
   final String token;
-  final Map<String, dynamic> plan;
-  final String membresiaId; // Añadimos el _id de la membresía
-  final String metodoPago; // Método de pago estático por ahora
+  final String planId; // Ahora solo necesitamos el planId
+  final String membresiaId;
+  final String metodoPago;
 
-  ConfirmacionScreen({super.key, required this.token, required this.plan, required this.membresiaId, this.metodoPago = 'Tarjeta de crédito'});
+  const ConfirmacionScreen({
+    super.key,
+    required this.token,
+    required this.planId,
+    required this.membresiaId,
+    this.metodoPago = 'Tarjeta de crédito',
+  });
+
+  @override
+  _ConfirmacionScreenState createState() => _ConfirmacionScreenState();
+}
+
+class _ConfirmacionScreenState extends State<ConfirmacionScreen> {
+  Map<String, dynamic>? _planData;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchPlanData();
+  }
+
+  Future<void> _fetchPlanData() async {
+    try {
+      final planIndividual = Planindividual(token: widget.token, planId: widget.planId);
+      final planData = await planIndividual.fetchPlanData();
+      setState(() {
+        _planData = planData;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error al obtener los datos del plan: $e');
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar los datos del plan: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final gimnasios = plan['gimnasios'] ?? []; // Lista de gimnasios que el plan cubre
+    final gimnasios = _planData?['gimnasios'] ?? [];
 
     return Scaffold(
-      backgroundColor: Colors.black, // Fondo negro
+      backgroundColor: Colors.black,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -26,61 +66,59 @@ class ConfirmacionScreen extends StatelessWidget {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: SingleChildScrollView( // Para permitir scroll si el contenido es extenso
-                child: Column(
-                  children: [
-                    PlanDetailsCard(
-                      plan: plan,
-                      metodoPago: metodoPago,
-                      gimnasios: gimnasios,
-                    ),
-                    SizedBox(height: 30),
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () async {
-                          try {
-                            // Crear una instancia de Aplazarmembresia
-                            final aplazamiento = Aplazarmembresia(
-                              token: token,
-                              membresiaId: membresiaId,
-                              planId: plan['_id'], // Usar el _id del plan
-                            );
+              child: _isLoading
+                  ? Center(child: CircularProgressIndicator(color: Colors.purple))
+                  : SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          if (_planData != null)
+                            PlanDetailsCard(
+                              plan: _planData!,
+                              metodoPago: widget.metodoPago,
+                              gimnasios: gimnasios,
+                            ),
+                          SizedBox(height: 30),
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                try {
+                                  final aplazamiento = Aplazarmembresia(
+                                    token: widget.token,
+                                    membresiaId: widget.membresiaId,
+                                    planId: widget.planId,
+                                  );
 
-                            // Realizar la solicitud
-                            final resultado = await aplazamiento.aplazar();
+                                  final resultado = await aplazamiento.aplazar();
 
-                            // Mostrar mensaje de éxito
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Membresía aplazada: ${resultado['message']}')),
-                            );
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Membresía aplazada: ${resultado['message']}'),
+                                  ));
 
-                            // Regresar a la pantalla anterior o donde necesites
-                            Navigator.pop(context);
-                          } catch (e) {
-                            // Mostrar mensaje de error
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error al aplazar la membresía: $e')),
-                            );
-                          }
-                        },
-                        child: Text(
-                          'Confirmar',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                                  Navigator.pop(context);
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error al aplazar la membresía: $e')),
+                                  );
+                                }
+                              },
+                              child: Text(
+                                'Confirmar',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.purple,
+                                padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                                textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ),
                           ),
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.purple, // Color del botón
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                          textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                        ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
             ),
           ),
         ],

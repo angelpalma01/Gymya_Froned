@@ -53,18 +53,16 @@ class _PagosScreenState extends State<PagosScreen> {
 
   // Función que maneja el ID del plan seleccionado
   void _seleccionarPlan(String planId) {
-    final planSeleccionado = planes.firstWhere((plan) => plan['_id'] == planId, orElse: () => null);
-
-    if (planSeleccionado != null) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ConfirmacionScreen(token: widget.token, plan: planSeleccionado, membresiaId: widget.membresiaId,),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ConfirmacionScreen(
+          token: widget.token,
+          planId: planId, // Solo pasamos el planId
+          membresiaId: widget.membresiaId,
         ),
-      );
-    } else {
-      print('No se encontró el plan seleccionado');
-    }
+      ),
+    );
   }
 
   // Mostrar modal de membresías con tarjetas centradas y scroll
