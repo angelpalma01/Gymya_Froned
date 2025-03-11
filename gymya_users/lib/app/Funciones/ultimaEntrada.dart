@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-class ultimaEntrada {
+class UltimaEntrada {
   final String token;
   final String membresiaId;
 
-  ultimaEntrada({required this.token, required this.membresiaId});
+  UltimaEntrada({required this.token, required this.membresiaId});
   
   // Obtener la última entrada
   Future<Map<String, dynamic>> fetchUltimaEntrada() async {
@@ -17,9 +17,11 @@ class ultimaEntrada {
     );
 
     if (response.statusCode == 200) {
+      // Respuesta exitosa, parseamos el JSON
       return jsonDecode(response.body);
     } else {
-      throw Exception('Error al obtener la última entrada');
+      // Para otros errores
+      throw Exception('Error al obtener la última entrada: ${response.reasonPhrase}');
     }
   }
 }

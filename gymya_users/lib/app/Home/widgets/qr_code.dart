@@ -4,9 +4,8 @@ import 'dart:convert';
 
 class QRCodeWidget extends StatelessWidget {
   final String membresiaId;
-  final String planId;
 
-  const QRCodeWidget({required this.membresiaId, required this.planId, super.key});
+  const QRCodeWidget({required this.membresiaId, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +19,6 @@ class QRCodeWidget extends StatelessWidget {
         barcode: Barcode.qrCode(),
         data: jsonEncode({
           'membresia_id': membresiaId,
-          'plan_id': planId,
         }),
         width: 200,
         height: 200,

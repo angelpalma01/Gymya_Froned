@@ -4,10 +4,12 @@ import 'package:gymya_users/app/funciones/formatearFecha.dart';
 class MembershipCard extends StatelessWidget {
   final String nombrePlan;
   final DateTime expiryDate;
+  final VoidCallback onConfirmacionPressed;
 
   const MembershipCard({
     required this.nombrePlan,
     required this.expiryDate,
+    required this.onConfirmacionPressed,
     super.key,
   });
 
@@ -46,8 +48,11 @@ class MembershipCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
             ),
-            onPressed: () {},
-            child: const Text('Pagar ahora', style: TextStyle(color: Colors.white)),
+            onPressed: onConfirmacionPressed,
+            child: const Text(
+              'Pagar ahora', 
+              style: TextStyle(color: Colors.white)
+            ),
           ),
         ],
       ),

@@ -42,7 +42,9 @@ class VisitCard extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            '${formatDateTime(ultimaVisita)} en $nombreGym.',
+            ultimaVisita != 'Aún no hay visitas'
+                ? '${formatDateTime(ultimaVisita)} en $nombreGym.'
+                : 'Aún no hay visitas en $nombreGym.',
             style: const TextStyle(
               color: Colors.white60,
               fontSize: 14,

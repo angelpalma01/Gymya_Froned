@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart'; // Importación del paquete
 import 'package:gymya_users/app/funciones/datosMembresia.dart';
 import 'package:gymya_users/app/funciones/ultimaEntrada.dart';
+import 'package:gymya_users/app/Funciones/planIndividual.dart';
 import 'package:gymya_users/app/Home/widgets/header.dart';
 import 'package:gymya_users/app/Home/widgets/membership_card.dart';
 import 'package:gymya_users/app/Home/widgets/visit_card.dart';
@@ -11,6 +12,7 @@ import 'package:gymya_users/app/Asistencias/historial_entradas.dart';
 import 'package:gymya_users/app/Entrenadores/entrenadores.dart';
 import 'package:gymya_users/app/horarios_gym/horariosgym.dart';
 import 'package:gymya_users/app/Pagos/pagos.dart';
+import 'package:gymya_users/app/Pagos/confirmacion.dart'; // pantalla de confirmación
 import 'dart:ui';
 
 class DashboardScreen extends StatefulWidget {
@@ -31,12 +33,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime? _selectedDay;
 
   DateTime? _expiryDate;
+  String? _planId;
   bool isLoading = true;
   bool showQRCode = false;
   late datosMembresia _datosMembresia;
-  late ultimaEntrada _ultimaEntrada;
+  late UltimaEntrada _ultimaEntrada;
+  late Planindividual _planindividual;
   Map<String, dynamic>? _membresiaData;
   Map<String, dynamic>? _ultimaEntradaData;
+  Map<String, dynamic>? _planData;
 
   final List<Widget> _screens = [];
 
@@ -44,7 +49,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
   void initState() {
     super.initState();
     _datosMembresia = datosMembresia(token: widget.token, membresiaId: widget.membresiaId);
-    _ultimaEntrada = ultimaEntrada(token: widget.token, membresiaId: widget.membresiaId);
+    _ultimaEntrada = UltimaEntrada(token: widget.token, membresiaId: widget.membresiaId);
+    _planindividual = Planindividual(token: widget.token, planId: _planId ?? 'Plan no disponible');
     _loadData();
 
     _screens.addAll([
@@ -55,20 +61,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _loadData() async {
-  try {
-    // Cargar datos de membresía
-    final membresiaData = await _datosMembresia.fetchMembresiaData();
-    setState(() {
-      _membresiaData = membresiaData;
-      _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
-    });
+    try {
+      // Cargar datos de membresía
+      final membresiaData = await _datosMembresia.fetchMembresiaData();
+      setState(() {
+        _membresiaData = membresiaData;
+        _expiryDate = DateTime.parse(membresiaData['fecha_fin']);
+      });
     } catch (error) {
       print('Error al obtener datos de membresía: $error');
-      
+
       // Asignar valores predeterminados para membresía en caso de error
       setState(() {
         _membresiaData = {'nombrePlan': 'Plan no disponible', 'fecha_fin': DateTime.now().toString()};
         _expiryDate = DateTime.now();
+      });
+    }
+
+    try {
+      // Cargar datos del plan
+      final planData = await _planindividual.fetchPlanData();
+      setState(() {
+        _planData = planData;
+      });
+    } catch (error) {
+      print('Error al obtener datos del plan: $error');
+
+      // Asignar valores predeterminados para el plan en caso de error
+      setState(() {
+        _planData = {
+          'nombre': 'Plan no disponible',
+          'descripcion': 'No se pudo cargar la información del plan.',
+        };
       });
     }
 
@@ -85,7 +109,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       setState(() {
         _ultimaEntradaData = {
           'fecha_hora': 'Aún no hay visitas', // O puedes poner un valor predeterminado como 'Sin visitas'
-          'gimnasioNombre': 'Gimnasio no disponible'
+          'gimnasioNombre': 'el gimnasio',
         };
       });
     }
@@ -95,7 +119,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       isLoading = false;
     });
   }
-
 
   void _onItemTapped(int index) {
     setState(() {
@@ -154,6 +177,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           MembershipCard(
                                             nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
                                             expiryDate: _expiryDate!,
+                                            onConfirmacionPressed: () {
+                                              Navigator.push(
+                                                context, 
+                                                MaterialPageRoute(
+                                                  builder: (context) => ConfirmacionScreen(
+                                                    token: widget.token, 
+                                                    plan: _planData!, 
+                                                    membresiaId: widget.membresiaId,
+                                                  ),
+                                                )
+                                              );
+                                            },
                                           ),
                                       ],
                                     ),
@@ -179,7 +214,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               : 'Aún no hay visitas',
                                           nombreGym: _ultimaEntradaData != null && _ultimaEntradaData!['gimnasioNombre'] != null
                                               ? _ultimaEntradaData!['gimnasioNombre']
-                                              : 'Gimnasio seleccionado',
+                                              : 'el gimnasio',
                                           onEnterPressed: _toggleQRCode,
                                           onHistoryPressed: () {
                                             Navigator.push(
@@ -216,6 +251,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     MembershipCard(
                                       nombrePlan: _membresiaData!['nombrePlan'] ?? 'Plan no disponible',
                                       expiryDate: _expiryDate!,
+                                      onConfirmacionPressed: () {
+                                              Navigator.push(
+                                                context, 
+                                                MaterialPageRoute(
+                                                  builder: (context) => ConfirmacionScreen(
+                                                    token: widget.token, 
+                                                    plan: _planData!, 
+                                                    membresiaId: widget.membresiaId,
+                                                  ),
+                                                )
+                                              );
+                                            },
                                     ),
                                   const SizedBox(height: 8),
                                   const Text(
@@ -233,7 +280,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         : 'Aún no hay visitas',
                                     nombreGym: _ultimaEntradaData != null && _ultimaEntradaData!['gimnasioNombre'] != null
                                         ? _ultimaEntradaData!['gimnasioNombre']
-                                        : 'Gimnasio no disponible',
+                                        : 'el gimnasio',
                                     onEnterPressed: _toggleQRCode,
                                     onHistoryPressed: () {
                                       Navigator.push(
@@ -292,7 +339,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       onTap: () {},
                       child: QRCodeWidget(
                         membresiaId: widget.membresiaId,
-                        planId: 'plan_id', // Reemplazar con el ID del plan si es necesario
                       ),
                     ),
                   ),

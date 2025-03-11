@@ -99,7 +99,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     },
                     blendMode: BlendMode.srcATop, // Asegura que el gradiente se aplique correctamente
                     child: Text(
-                      'Sergio Terán', // Nombre fijo
+                      '${widget.user['nombre_completo']}', // Nombre fijo
                       style: TextStyle(
                         fontSize: screenWidth * 0.08, // Tamaño de fuente dinámico
                         fontWeight: FontWeight.bold,
