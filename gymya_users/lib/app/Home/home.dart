@@ -8,7 +8,7 @@ import 'package:gymya_users/app/Home/widgets/visit_card.dart';
 import 'package:gymya_users/app/Home/widgets/calendar.dart';
 import 'package:gymya_users/app/Home/widgets/qr_code.dart';
 import 'package:gymya_users/app/Asistencias/historial_entradas.dart';
-import 'package:gymya_users/app/Entrenadores/entrenadores.dart';
+//import 'package:gymya_users/app/Entrenadores/entrenadores.dart';
 import 'package:gymya_users/app/horarios_gym/horariosgym.dart';
 import 'package:gymya_users/app/Pagos/pagos.dart';
 import 'package:gymya_users/app/Pagos/confirmacion.dart'; // pantalla de confirmación
@@ -50,7 +50,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     _loadData();
 
     _screens.addAll([
-      EntrenadoresScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
+      //EntrenadoresScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
       HorariosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
       PagosScreen(token: widget.token, user: widget.user, membresiaId: widget.membresiaId),
     ]);
@@ -355,10 +355,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
           icon: Icon(Icons.home),
           label: 'Inicio',
         ),
+        /*
         BottomNavigationBarItem(
           icon: Icon(Icons.fitness_center),
           label: 'Couch',
-        ),
+        ), */
         BottomNavigationBarItem(
           icon: Icon(Icons.schedule),
           label: 'Horarios',
