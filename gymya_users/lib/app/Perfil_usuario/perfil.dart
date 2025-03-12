@@ -62,30 +62,58 @@ class _PerfilScreenState extends State<PerfilScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(height: 20),
-                  // Imagen de perfil con borde degradado
-                  Container(
-                    padding: const EdgeInsets.all(4), // Borde de 4px
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        colors: [Colors.purple, Colors.red],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(100), // Borde redondeado
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple.withOpacity(0.5),
-                          blurRadius: 10,
-                          spreadRadius: 2,
-                          offset: const Offset(0, 4),
+                  Stack(
+                    alignment: Alignment.topRight,
+                    children: [
+                      // Imagen de perfil con borde degradado
+                      Container(
+                        padding: const EdgeInsets.all(4), // Borde de 4px
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            colors: [Colors.purple, Colors.red],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(100), // Borde redondeado
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.purple.withOpacity(0.5),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    child: CircleAvatar(
-                      radius: 80,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: NetworkImage(widget.user['imagen']),
-                    ),
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: NetworkImage(widget.user['imagen']),
+                        ),
+                      ),
+                      // Botón de cámara sobre la imagen de perfil
+                      Positioned(
+                        top: 115,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(2),
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              colors: [Colors.purple, Colors.red],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {},
+                          ),
+                        )
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   // Nombre con gradiente
