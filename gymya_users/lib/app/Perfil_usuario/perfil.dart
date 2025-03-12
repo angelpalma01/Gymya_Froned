@@ -4,6 +4,9 @@ import 'dart:io'; // Para manejar el archivo de imagen
 import 'package:http/http.dart' as http; // Para hacer solicitudes HTTP
 import 'package:async/async.dart'; // Para multipart/form-data
 import 'dart:convert'; // Para codificar la respuesta JSON
+import 'widgets/profile_image.dart';
+import 'widgets/detail_card.dart';
+import 'package:gymya_users/app/Home/home.dart';
 
 class PerfilScreen extends StatefulWidget {
   final String token;
@@ -108,7 +111,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.transparent, // Fondo transparente
-        elevation: 0, // Sin sombra
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back,
@@ -116,7 +118,16 @@ class _PerfilScreenState extends State<PerfilScreen> {
           ),
           onPressed: () {
             // Navegar de regreso a la pantalla home.dart
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DashboardScreen(
+                  token: widget.token,
+                  user: widget.user,
+                  membresiaId: widget.membresiaId,
+                ),
+              ),
+            );
           },
         ),
       ),
@@ -127,74 +138,27 @@ class _PerfilScreenState extends State<PerfilScreen> {
               ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 20),
                   Stack(
                     alignment: Alignment.topRight,
                     children: [
-                      // Imagen de perfil con borde degradado
-                      Container(
-                        padding: const EdgeInsets.all(4), // Borde de 4px
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            colors: [Colors.purple, Colors.red],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(100), // Borde redondeado
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.purple.withOpacity(0.5),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: CircleAvatar(
-                          radius: 80,
-                          backgroundColor: Colors.transparent,
-                          backgroundImage: _selectedImage != null
-                              ? FileImage(_selectedImage!)
-                              : NetworkImage(user['imagen']) as ImageProvider,
-                        ),
-                      ),
-                      // Botón de cámara sobre la imagen de perfil
-                      Positioned(
-                        top: 115,
-                        right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(2),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Colors.purple, Colors.red],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            shape: BoxShape.circle,
-                          ),
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              // Abrir opciones para seleccionar imagen
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) => _buildImagePickerOptions(),
-                              );
-                            },
-                          ),
-                        ),
+                      ProfileImage(
+                        imageUrl: user['imagen'],
+                        selectedImage: _selectedImage,
+                        isUploading: isUploading,
+                        onCameraTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => _buildImagePickerOptions(),
+                          );
+                        },
                       ),
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Nombre con gradiente
                   ShaderMask(
                     shaderCallback: (Rect bounds) {
                       return const LinearGradient(
@@ -215,20 +179,19 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-                  // Detalles adicionales en tarjetas minimalistas
-                  _buildDetailCard(
+                  DetailCard(
                     icon: Icons.person_outline,
                     title: 'ID de Usuario',
                     subtitle: user['_id'],
                   ),
                   const SizedBox(height: 16),
-                  _buildDetailCard(
+                  DetailCard(
                     icon: Icons.email,
                     title: 'Correo',
                     subtitle: user['email'],
                   ),
                   const SizedBox(height: 16),
-                  _buildDetailCard(
+                  DetailCard(
                     icon: Icons.phone,
                     title: 'Teléfono',
                     subtitle: user['telefono'] ?? 'No proporcionado',
@@ -262,69 +225,6 @@ class _PerfilScreenState extends State<PerfilScreen> {
           },
         ),
       ],
-    );
-  }
-
-  // Widget para construir tarjetas de detalles minimalistas
-  Widget _buildDetailCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    bool isPhone = false,
-  }) {
-    return Card(
-      color: Colors.grey[900],
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          children: [
-            // Ícono con gradiente
-            ShaderMask(
-              shaderCallback: (Rect bounds) {
-                return const LinearGradient(
-                  colors: [Colors.purple, Colors.red],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ).createShader(bounds);
-              },
-              child: Icon(icon, size: 30, color: Colors.white),
-            ),
-            const SizedBox(width: 16),
-            // Texto
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white60,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Roboto', // Cambia la tipografía si lo deseas
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      color: isPhone && subtitle == 'No proporcionado'
-                          ? Colors.grey
-                          : Colors.white70,
-                      fontSize: 16,
-                      fontFamily: 'Roboto', // Cambia la tipografía si lo deseas
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
