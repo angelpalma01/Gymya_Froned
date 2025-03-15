@@ -146,7 +146,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
                     alignment: Alignment.topRight,
                     children: [
                       ProfileImage(
-                        imageUrl: user['imagen'],
+                        imageUrl: user['imagen']  ?? 'https://via.placeholder.com/150',
                         selectedImage: _selectedImage,
                         isUploading: isUploading,
                         onCameraTap: () {
