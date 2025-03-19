@@ -265,8 +265,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                   ),
                                   const SizedBox(height: 12),
                                   VisitCard(
-                                    ultimaVisita: _ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora'] != null
-                                        ? _ultimaEntradaData!['fecha_hora']
+                                    ultimaVisita: _ultimaEntradaData != null && _ultimaEntradaData!['fecha_hora_entrada'] != null
+                                        ? _ultimaEntradaData!['fecha_hora_entrada']
                                         : 'Aún no hay visitas',
                                     nombreGym: _ultimaEntradaData != null && _ultimaEntradaData!['gimnasioNombre'] != null
                                         ? _ultimaEntradaData!['gimnasioNombre']

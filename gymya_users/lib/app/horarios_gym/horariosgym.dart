@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gymya_users/app/horarios_gym/widgets/header.dart';
 import 'package:gymya_users/app/horarios_gym/widgets/gimnasiosCard.dart';
 import 'package:gymya_users/app/Funciones/listaGimnasios.dart'; // Importa la lista de gimnasios
+import 'package:gymya_users/app/Funciones/contarAsistencias.dart'; // Función para contar las asistencias
 
 class HorariosScreen extends StatefulWidget {
   final String token;
@@ -16,7 +17,7 @@ class HorariosScreen extends StatefulWidget {
 
 class _HorariosScreenState extends State<HorariosScreen> {
   bool isLoading = true;
-  List<dynamic> gimnasios = [];
+  List<Map<String, dynamic>> gimnasios = []; // Modificamos el tipo a Map para agregar datos adicionales
   late GimnasiosService _listaGimnasios;
 
   @override
@@ -28,9 +29,23 @@ class _HorariosScreenState extends State<HorariosScreen> {
 
   Future<void> _loadData() async {
     try {
-      final listaGimnasios = await _listaGimnasios.fetchGimnasios(); // Cambia a fetchAsistencias
+      final listaGimnasios = await _listaGimnasios.fetchGimnasios();
+      // Por cada gimnasio, obtenemos las asistencias
+      for (var gimnasio in listaGimnasios) {
+        try {
+          final contarService = ContarAsistencias(token: widget.token, gymId: gimnasio['_id']);
+          final response = await contarService.Contar();
+          final usuariosDentro = response['asistencias'] ?? 0; // Asistencias, si no existe, 0
+          
+          // Agregamos el número de usuarios dentro a los datos del gimnasio
+          gimnasio['usuariosDentro'] = usuariosDentro;
+        } catch (e) {
+          print('Error al contar asistencias para gimnasio ${gimnasio['_id']}: $e');
+          gimnasio['usuariosDentro'] = 0; // Si hay error, asignamos 0
+        }
+      }
       setState(() {
-        gimnasios = listaGimnasios;
+        gimnasios = List<Map<String, dynamic>>.from(listaGimnasios); // Convertimos a lista de Map
         isLoading = false;
       });
     } catch (error) {
@@ -38,6 +53,10 @@ class _HorariosScreenState extends State<HorariosScreen> {
       setState(() {
         isLoading = false;
       });
+      // Mostrar un mensaje de error en la interfaz de usuario
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cargar los gimnasios: $error')),
+      );
     }
   }
 
@@ -69,14 +88,25 @@ class _HorariosScreenState extends State<HorariosScreen> {
                         itemCount: gimnasios.length,
                         itemBuilder: (context, index) {
                           final gimnasio = gimnasios[index];
-                          return Gimnasioscard(
-                            gimnasio: {
-                              'imagen': gimnasio['imagen'] ?? 'https://via.placeholder.com/150',
-                              'nombre': gimnasio['nombre'] ?? 'Nombre no disponible',
-                              'direccion': gimnasio['direccion'] ?? 'Dirección no disponible',
-                              'usuariosDentro': gimnasio['usuariosDentro'] ?? 0,
-                              'horario': gimnasio['horario'] ?? 'Horario no disponible',
-                            },
+
+                          return Column(
+                            children: [
+                              Gimnasioscard(
+                                gimnasio: {
+                                  'imagen': gimnasio['imagen'] ?? 'https://via.placeholder.com/150',
+                                  'nombre': gimnasio['nombre'] ?? 'Nombre no disponible',
+                                  'direccion': gimnasio['direccion'] ?? 'Dirección no disponible',
+                                  'horario': gimnasio['horario'] ?? 'Horario no disponible',
+                                },
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Usuarios dentro: ${gimnasio['usuariosDentro']}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                                ),
+                              ),
+                            ],
                           );
                         },
                       ),

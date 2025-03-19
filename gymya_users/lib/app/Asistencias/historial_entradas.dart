@@ -94,19 +94,19 @@ class _HistorialEntradasScreenState extends State<HistorialEntradasScreen> {
                         itemCount: _asistencias.length,
                         itemBuilder: (context, index) {
                           final asistencia = _asistencias[index];
-                          final tipoAcceso = asistencia['tipo_acceso'] ?? "No especificado";
+                          final fechaEntrada = asistencia['fecha_hora_entrada'] ?? "Sin entrada";
+                          final fechaSalida = asistencia['fecha_hora_salida'];
                           final nombreGym = asistencia['gimnasioNombre'] ?? "No especificado";
-                          final fechaHora = asistencia['fecha_hora'] ?? "Sin fecha";
 
-                          final icon = tipoAcceso == 'Entrada' ? Icons.login : Icons.logout;
-                          final color = tipoAcceso == 'Entrada' ? Colors.green : Colors.red;
+                          final icon = fechaSalida == null ? Icons.login : Icons.logout;
+                          final color = fechaSalida == null ? Colors.green : Colors.red;
 
                           return AsistenciaCard(
                             icon: icon,
                             color: color,
-                            fechaHora: fechaHora,
+                            fechaHoraEntrada: fechaEntrada,
+                            fechaHoraSalida: fechaSalida,
                             nombreGym: nombreGym,
-                            tipoAcceso: tipoAcceso,
                           );
                         },
                       ),

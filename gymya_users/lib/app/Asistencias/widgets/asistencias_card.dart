@@ -4,17 +4,17 @@ import 'package:gymya_users/app/Funciones/formatearFecha.dart';
 class AsistenciaCard extends StatelessWidget {
   final IconData icon;
   final Color color;
-  final String fechaHora;
+  final String fechaHoraEntrada;
+  final String? fechaHoraSalida; // Permitir null
   final String nombreGym;
-  final String tipoAcceso;
 
   const AsistenciaCard({
     super.key,
     required this.icon,
     required this.color,
-    required this.fechaHora,
+    required this.fechaHoraEntrada,
+    this.fechaHoraSalida, // Permitir null
     required this.nombreGym,
-    required this.tipoAcceso,
   });
 
   @override
@@ -32,19 +32,32 @@ class AsistenciaCard extends StatelessWidget {
           size: 32,
         ),
         title: Text(
-          formatDateTime(fechaHora),
+          'Asistencia en $nombreGym',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
             color: Colors.white,
           ),
         ),
-        subtitle: Text(
-          '$tipoAcceso de $nombreGym', // Muestra "Entrada de (nombreGym)" o "Salida de (nombreGym)"
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.white60,
-          ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Entrada: ${formatDateTime(fechaHoraEntrada)}',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.white60,
+              ),
+            ),
+            if (fechaHoraSalida != null)
+              Text(
+                'Salida: ${formatDateTime(fechaHoraSalida!)}', // Mostrar si existe
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white60,
+                ),
+              ),
+          ],
         ),
       ),
     );

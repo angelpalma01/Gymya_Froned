@@ -65,11 +65,6 @@ class _GimnasioscardState extends State<Gimnasioscard> {
                     'Horario: ${gimnasio['horario'] ?? 'No disponible'}',
                     style: const TextStyle(color: Colors.grey),
                   ),
-                  const SizedBox(height: 4), // Espaciado entre los textos
-                  Text(
-                    'Usuarios en el gimnasio: ${gimnasio['usuariosDentro'] ?? 0}',
-                    style: const TextStyle(color: Colors.grey),
-                  ),
                 ],
               ),
             ],
